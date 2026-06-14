@@ -1,0 +1,209 @@
+---
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: Heading[];
+}
+
+const { headings = [] } = Astro.props;
+
+// Show h1, h2 and h3
+const tocHeadings = headings.filter(h => h.depth >= 1 && h.depth <= 3);
+---
+
+{tocHeadings.length > 0 && (
+  <nav class="toc-container" aria-label="目录导航">
+    <div id="toc-list" class="toc-list">
+      <div class="toc-title">目录</div>
+      <ul>
+        {tocHeadings.map((heading) => (
+          <li class={`toc-item toc-depth-${heading.depth}`}>
+            <a
+              href={`#${heading.slug}`}
+              class="toc-link"
+              data-heading-slug={heading.slug}
+            >
+              {heading.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </nav>
+)}
+
+<style>
+  .toc-container {
+    display: none;
+    position: sticky;
+    top: 5rem;
+    width: 14rem;
+    flex-shrink: 0;
+    align-self: flex-start;
+    max-height: calc(100vh - 6rem);
+    overflow-y: auto;
+  }
+
+  @media (min-width: 1280px) {
+    .toc-container {
+      display: block;
+    }
+  }
+
+  .toc-list {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    max-height: calc(100vh - 10rem);
+    overflow-y: auto;
+  }
+
+  :global(.dark) .toc-list {
+    background: #1f2937;
+    border-color: #374151;
+  }
+
+  .toc-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #9ca3af;
+    margin-bottom: 0.75rem;
+  }
+
+  :global(.dark) .toc-title {
+    color: #6b7280;
+  }
+
+  .toc-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .toc-item {
+    margin: 0;
+    padding: 0;
+  }
+
+  .toc-link {
+    display: block;
+    padding: 0.3rem 0;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: #6b7280;
+    text-decoration: none;
+    transition: color 0.2s;
+    border-left: 2px solid transparent;
+    padding-left: 0.5rem;
+  }
+
+  .toc-link:hover {
+    color: #111827;
+  }
+
+  :global(.dark) .toc-link:hover {
+    color: #f3f4f6;
+  }
+
+  .toc-link.active {
+    color: #111827;
+    font-weight: 500;
+    border-left-color: #111827;
+  }
+
+  :global(.dark) .toc-link.active {
+    color: #f3f4f6;
+    border-left-color: #f3f4f6;
+  }
+
+  .toc-depth-1 .toc-link {
+    font-weight: 600;
+    font-size: 0.8125rem;
+  }
+
+  .toc-depth-3 .toc-link {
+    padding-left: 1.25rem;
+    font-size: 0.75rem;
+  }
+
+  /* Scrollbar styling */
+  .toc-list::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  .toc-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .toc-list::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 3px;
+  }
+
+  :global(.dark) .toc-list::-webkit-scrollbar-thumb {
+    background: #4b5563;
+  }
+</style>
+
+<script>
+  function initTableOfContents() {
+    // Active heading tracking
+    const tocLinks = document.querySelectorAll<HTMLAnchorElement>('.toc-link');
+    if (tocLinks.length === 0) return;
+
+    const headings = Array.from(tocLinks)
+      .map(link => {
+        const slug = link.getAttribute('data-heading-slug');
+        return slug ? document.getElementById(slug) : null;
+      })
+      .filter(Boolean) as HTMLElement[];
+
+    if (headings.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            tocLinks.forEach(link => {
+              if (link.getAttribute('data-heading-slug') === id) {
+                link.classList.add('active');
+              } else {
+                link.classList.remove('active');
+              }
+            });
+          }
+        });
+      },
+      {
+        rootMargin: '-80px 0px -70% 0px',
+        threshold: 0,
+      }
+    );
+
+    headings.forEach(heading => observer.observe(heading));
+
+    // Smooth scroll on click
+    tocLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const slug = link.getAttribute('data-heading-slug');
+        const target = slug ? document.getElementById(slug) : null;
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  }
+
+  initTableOfContents();
+  document.addEventListener('astro:after-swap', initTableOfContents);
+</script>

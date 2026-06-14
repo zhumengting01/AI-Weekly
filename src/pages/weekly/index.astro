@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostList from '../../components/PostList.astro';
+import { getCollection } from 'astro:content';
+import { getWeekTitle } from '../../utils/date';
+
+const allWeekly = await getCollection('weekly');
+const sortedWeekly = allWeekly.sort((a, b) => {
+  return new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf();
+});
+
+const weekly = sortedWeekly.map(post => ({
+  ...post,
+  url: `/weekly/${post.id}`,
+  frontmatter: { ...post.data, title: getWeekTitle(post.data.date) }
+}));
+---
+
+<BaseLayout title="AI 周刊">
+  <div class="max-w-3xl mx-auto">
+    <header class="mb-12 text-center" transition:animate="fade">
+      <h1 class="text-5xl mb-4">AI 周刊</h1>
+      <p class="text-xl text-muted-foreground">
+        每周精选 AI 领域热点新闻、工具推荐和开源项目
+      </p>
+    </header>
+
+    <div transition:animate="fade">
+      <PostList posts={weekly} showExcerpt={true} showTags={true} title="所有期数" />
+    </div>
+  </div>
+</BaseLayout>

@@ -1,33 +1,63 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import PostListWithThumbnails from '../components/PostListWithThumbnails.astro';
 import { getCollection } from 'astro:content';
+import { getWeekTitle } from '../utils/date';
 
-// Get all blog posts and sort them by date
-const allPosts = await getCollection('posts');
-const sortedPosts = allPosts.sort((a, b) => {
+const allWeekly = await getCollection('weekly');
+const sortedWeekly = allWeekly.sort((a, b) => {
   return new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf();
 });
 
-// Format posts for the PostList component
-const posts = sortedPosts.map(post => ({
-  ...post,
-  url: `/posts/${post.id}`,
-  frontmatter: post.data
-}));
+// Group by year-month
+const grouped = new Map();
+sortedWeekly.forEach(post => {
+  const date = new Date(post.data.date);
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const key = `${year}年${month}月`;
+  if (!grouped.has(key)) {
+    grouped.set(key, []);
+  }
+  grouped.get(key).push(post);
+});
 ---
 
-<BaseLayout title="Journal">
-  <div class="max-w-3xl mx-auto">
+<BaseLayout title="归档">
+  <div class="max-w-3xl mx-auto min-h-[52vh]">
     <header class="mb-12 text-center" transition:animate="fade">
-      <h1 class="text-5xl mb-4">Journal</h1>
+      <h1 class="text-5xl mb-4">归档</h1>
       <p class="text-xl text-muted-foreground">
-        Explore our latest thoughts, ideas, and stories
+        按时间归置的所有周刊
       </p>
     </header>
 
-    <div transition:animate="fade">
-      <PostListWithThumbnails posts={posts} showTags={true} title="All Posts" />
+    <div class="space-y-10" transition:animate="fade">
+      {Array.from(grouped.entries()).map(([period, posts]) => (
+        <section>
+          <h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-800 pb-2">
+            {period}
+          </h2>
+          <ul class="space-y-3">
+            {posts.map(post => {
+              const date = new Date(post.data.date);
+              const day = date.getDate();
+              return (
+                <li class="flex items-start gap-4 group">
+                  <span class="text-sm text-gray-400 dark:text-gray-600 mt-1 w-8 text-right shrink-0">
+                    {day}日
+                  </span>
+                  <a
+                    href={`/weekly/${post.id}`}
+                    class="text-lg text-gray-800 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400 transition-colors group-hover:underline"
+                  >
+                    {getWeekTitle(post.data.date)}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ))}
     </div>
   </div>
 </BaseLayout>

@@ -21,7 +21,7 @@ const { prevPost, nextPost } = Astro.props;
         href={prevPost.url} 
         class="post-nav-link items-start"
       >
-        <span class="post-nav-direction">Previous Post</span>
+        <span class="post-nav-direction">上一篇</span>
         <span class="post-nav-title">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -38,7 +38,7 @@ const { prevPost, nextPost } = Astro.props;
         href={nextPost.url} 
         class="post-nav-link items-end text-right"
       >
-        <span class="post-nav-direction">Next Post</span>
+        <span class="post-nav-direction">下一篇</span>
         <span class="post-nav-title">
           {nextPost.title}
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">

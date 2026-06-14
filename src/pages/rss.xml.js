@@ -10,8 +10,8 @@ export async function GET(context) {
   );
   
   return rss({
-    title: 'Brook Blog',
-    description: 'A minimalist blog template focusing on clean typography and distraction-free reading experience',
+    title: 'AI Weekly',
+    description: '一个专注于简洁排版和无干扰阅读体验的极简博客模板',
     site: context.site,
     items: sortedPosts.map((post) => ({
       title: post.data.title,
@@ -19,6 +19,6 @@ export async function GET(context) {
       description: post.data.excerpt,
       link: `/posts/${post.id}/`,
     })),
-    customData: `<language>en-us</language>`,
+    customData: `<language>zh-cn</language>`,
   });
 }

@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f0f23"/>
+      <stop offset="50%" style="stop-color:#1a1a3e"/>
+      <stop offset="100%" style="stop-color:#0d0d2b"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.3"/>
+      <stop offset="100%" style="stop-color:#6366f1;stop-opacity:0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <!-- Grid pattern -->
+  <g opacity="0.05" stroke="#6366f1" stroke-width="1">
+    <line x1="0" y1="0" x2="1200" y2="675"/>
+    <line x1="200" y1="0" x2="1200" y2="500"/>
+    <line x1="400" y1="0" x2="1200" y2="400"/>
+    <line x1="0" y1="200" x2="800" y2="675"/>
+    <line x1="0" y1="400" x2="400" y2="675"/>
+    <line x1="1200" y1="0" x2="0" y2="675"/>
+    <line x1="1000" y1="0" x2="0" y2="500"/>
+    <line x1="800" y1="0" x2="0" y2="400"/>
+  </g>
+  <!-- Accent line -->
+  <rect x="80" y="200" width="4" height="280" fill="url(#accent)" rx="2"/>
+  <!-- Glow effect -->
+  <ellipse cx="900" cy="337" rx="350" ry="250" fill="url(#glow)"/>
+  <!-- Circuit dots -->
+  <g fill="#6366f1" opacity="0.4">
+    <circle cx="950" cy="150" r="3"/>
+    <circle cx="1020" cy="200" r="2"/>
+    <circle cx="1080" cy="280" r="4"/>
+    <circle cx="1000" cy="400" r="3"/>
+    <circle cx="1050" cy="500" r="2"/>
+    <circle cx="900" cy="520" r="3"/>
+    <circle cx="850" cy="180" r="2"/>
+    <circle cx="1100" cy="350" r="2"/>
+  </g>
+  <!-- Connection lines -->
+  <g stroke="#6366f1" stroke-width="0.5" opacity="0.2">
+    <line x1="950" y1="150" x2="1020" y2="200"/>
+    <line x1="1020" y1="200" x2="1080" y2="280"/>
+    <line x1="1080" y1="280" x2="1100" y2="350"/>
+    <line x1="1100" y1="350" x2="1000" y2="400"/>
+    <line x1="1000" y1="400" x2="1050" y2="500"/>
+    <line x1="1000" y1="400" x2="900" y2="520"/>
+    <line x1="950" y1="150" x2="850" y2="180"/>
+  </g>
+  <!-- Text -->
+  <text x="110" y="260" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="#8b5cf6" font-weight="600" letter-spacing="4">AI WEEKLY</text>
+  <text x="110" y="320" font-family="system-ui, -apple-system, sans-serif" font-size="42" fill="#ffffff" font-weight="700">GPT-5.5领跑</text>
+  <text x="110" y="375" font-family="system-ui, -apple-system, sans-serif" font-size="42" fill="#ffffff" font-weight="700">智能体基准测试</text>
+  <text x="110" y="430" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="#94a3b8" font-weight="400">AI医疗突破性进展与全球治理新格局</text>
+  <text x="110" y="490" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#64748b">2026年第24周 · 第3期</text>
+  <!-- Bottom bar -->
+  <rect x="0" y="640" width="1200" height="35" fill="#0a0a1a" opacity="0.8"/>
+  <text x="80" y="662" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#475569">头条新闻 · 技术突破 · 行业应用 · 研究论文精选 · 专家观点</text>
+  <text x="1120" y="662" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#475569" text-anchor="end">ai-weekly.com</text>
+</svg>

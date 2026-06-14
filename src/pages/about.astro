@@ -2,52 +2,58 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
-<BaseLayout title="About">
+<BaseLayout title="关于">
   <div class="max-w-3xl mx-auto">
     <header class="mb-12 text-center" transition:animate="fade">
-      <h1 class="text-5xl mb-4">About</h1>
+      <h1 class="text-5xl mb-4">关于 AI Weekly</h1>
       <p class="text-xl text-muted-foreground">
-        Learn more about Brook, a minimalist blog template
+        每周一早晨，为你整理过去一周的 AI 世界
       </p>
     </header>
-    
+
     <div class="prose prose-lg dark:prose-invert max-w-none" transition:animate="fade">
       <p>
-        Brook is a minimalist blog template designed for developers and writers who value clean typography 
-        and a distraction-free reading experience. Built with modern web technologies, Brook offers a 
-        perfect balance of simplicity and functionality.
+        AI Weekly 是一份专注于人工智能领域的中文周刊。每周一上午自动发布，
+        精选过去一周全球 AI 行业最值得关注的动态，帮你用最少的时间掌握最多的信息。
       </p>
-      
-      <h2>Features</h2>
-      
+
+      <h2>内容板块</h2>
+
       <ul>
-        <li>Clean, minimalist design that puts your content first</li>
-        <li>Full dark mode support</li>
-        <li>Responsive layout for all devices</li>
-        <li>Content collections for easy content management</li>
-        <li>Markdown and MDX support for rich content</li>
-        <li>Code syntax highlighting for developers</li>
-        <li>Tags and categorization</li>
-        <li>SEO optimized</li>
-        <li>Fast performance with minimal JavaScript</li>
-        <li>Smooth page transitions</li>
+        <li><strong>本周焦点</strong> — 最具行业影响力的重大新闻</li>
+        <li><strong>前沿速递</strong> — 技术进展、模型发布与算法创新</li>
+        <li><strong>落地前线</strong> — AI 在各行业的商业化应用案例</li>
+        <li><strong>研究论文精选</strong> — 重要学术论文与学术成果</li>
+        <li><strong>洞察之声</strong> — 行业领袖与学者的观点评论</li>
+        <li><strong>一周观察</strong> — 编辑对本周趋势的总结与思考</li>
       </ul>
-      
-      <h2>Technology</h2>
-      
+
+      <h2>自动生成</h2>
+
       <p>
-        Brook is built with <a href="https://astro.build" target="_blank" rel="noopener noreferrer">Astro</a>, 
-        a modern static site generator that delivers lightning-fast performance with a great developer 
-        experience. Combined with <a href="https://tailwindcss.com" target="_blank" rel="noopener noreferrer">Tailwind CSS</a> 
-        for styling, Brook provides a solid foundation for your content.
+        AI Weekly 实现了从内容采集到发布的全自动化流程：
       </p>
-      
-      <h2>Get Started</h2>
-      
+
+      <ol>
+        <li><strong>RSS 采集</strong> — 从量子位、36氪、OpenAI Blog、Hugging Face Blog 等十余个中英文源抓取新闻</li>
+        <li><strong>AI 整理</strong> — 调用大语言模型对新闻进行分类、摘要和点评</li>
+        <li><strong>自动发布</strong> — 生成 Markdown 文件并构建静态站点</li>
+      </ol>
+
+      <h2>技术栈</h2>
+
+      <ul>
+        <li><span class="text-blue-600 dark:text-blue-400 font-medium">Astro</span> — 静态站点生成</li>
+        <li><span class="text-blue-600 dark:text-blue-400 font-medium">Tailwind CSS</span> — 样式设计</li>
+        <li><span class="text-blue-600 dark:text-blue-400 font-medium">MiMo API</span> — AI 内容整理</li>
+        <li><span class="text-blue-600 dark:text-blue-400 font-medium">Python</span> — 采集与生成脚本</li>
+      </ul>
+
+      <h2>订阅与阅读</h2>
+
       <p>
-        Whether you're a developer looking to share code snippets, a writer seeking a clean platform for your 
-        stories, or anyone in between, Brook provides the perfect starting point for your content. Check out the 
-        <a href="/journal">Journal</a> to see it in action.
+        你可以通过 <a href="/rss.xml" target="_blank" rel="noopener noreferrer">RSS</a> 订阅更新，或在
+        <a href="/weekly">周刊</a> 页面浏览所有期数。
       </p>
     </div>
   </div>

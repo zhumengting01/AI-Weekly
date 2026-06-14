@@ -43,12 +43,12 @@ const optimizedImagePath = image ? optimizeImagePath(image) : null;
     </div>
     
     {showTags && tags && tags.length > 0 && (
-      <div class="flex flex-wrap gap-2 mb-4" aria-label="Tags">
+      <div class="flex flex-wrap gap-2 mb-4" aria-label="标签">
         {tags.map((tag) => (
           <a
             href={`/tags/${tag}`}
             class="inline-flex items-center rounded-md bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            aria-label={`View all posts tagged ${tag}`}
+            aria-label={`查看所有标签为 ${tag} 的文章`}
           >
             {tag}
           </a>
@@ -60,11 +60,11 @@ const optimizedImagePath = image ? optimizeImagePath(image) : null;
       <a 
         href={post.url} 
         class="block feature-image focus-ring"
-        aria-label={`View ${title} article`}
+        aria-label={`查看文章：${title}`}
       >
         <img
           src={optimizedImagePath}
-          alt={`Preview image for ${title}`}
+          alt={`${title}的预览图片`}
           class="w-full h-full object-cover transition-transform hover:scale-105"
           loading="lazy"
           decoding="async"
@@ -81,9 +81,9 @@ const optimizedImagePath = image ? optimizeImagePath(image) : null;
           <a 
             href={post.url} 
             class="text-sm font-medium hover:underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 rounded px-2 py-1 inline-block"
-            aria-label={`Read more about ${title}`}
+            aria-label={`阅读更多关于${title}`}
           >
-            Read more <span aria-hidden="true">→</span>
+            阅读更多 <span aria-hidden="true">→</span>
           </a>
         </div>
       </>

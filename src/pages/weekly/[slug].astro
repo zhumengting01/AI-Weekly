@@ -1,0 +1,43 @@
+---
+import { getCollection, render } from 'astro:content';
+import PostLayout from '../../layouts/PostLayout.astro';
+import { getWeekTitle } from '../../utils/date';
+
+export async function getStaticPaths() {
+  const allWeekly = await getCollection('weekly');
+
+  const sortedWeekly = allWeekly.sort((a, b) =>
+    new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf()
+  );
+
+  return sortedWeekly.map((entry, index) => {
+    const weekTitle = getWeekTitle(entry.data.date);
+    const prevPost = sortedWeekly[index - 1]
+      ? {
+          url: `/weekly/${sortedWeekly[index - 1].id}`,
+          title: getWeekTitle(sortedWeekly[index - 1].data.date)
+        }
+      : null;
+
+    const nextPost = sortedWeekly[index + 1]
+      ? {
+          url: `/weekly/${sortedWeekly[index + 1].id}`,
+          title: getWeekTitle(sortedWeekly[index + 1].data.date)
+        }
+      : null;
+
+    return {
+      params: { slug: entry.id },
+      props: { entry, prevPost, nextPost, weekTitle },
+    };
+  });
+}
+
+const { entry, prevPost, nextPost, weekTitle } = Astro.props;
+const { Content, headings } = await render(entry);
+const frontmatter = { ...entry.data, title: weekTitle };
+---
+
+<PostLayout frontmatter={frontmatter} headings={headings} prevPost={prevPost} nextPost={nextPost}>
+  <Content />
+</PostLayout>
