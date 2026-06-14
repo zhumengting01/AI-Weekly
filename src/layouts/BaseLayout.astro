@@ -16,17 +16,18 @@ interface Props {
 
 const { 
   title, 
-  description = "A minimalist blog template focusing on clean typography and distraction-free reading experience.", 
+  description = "一个专注于简洁排版和无干扰阅读体验的极简博客模板。", 
   image = "/og-image.png",
   type = "website",
   publishedDate,
   modifiedDate,
-  author = "Brook Team"
+  author = "AI Weekly 团队"
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const ogImageURL = image.startsWith('/') ? new URL(image, Astro.site) : image;
-const siteName = "Brook Blog";
+const siteName = "AI Weekly";
+const currentPath = Astro.url.pathname;
 
 // Strukturierte Daten (JSON-LD) für bessere SEO
 const jsonLDWebsite = {
@@ -63,12 +64,12 @@ const jsonLD = type === 'article' && jsonLDArticle ? jsonLDArticle : jsonLDWebsi
 ---
 
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="zh-CN" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>{title} | Brook</title>
+    <title>{title} | AI Weekly</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
 
@@ -126,15 +127,16 @@ const jsonLD = type === 'article' && jsonLDArticle ? jsonLDArticle : jsonLDWebsi
     <div class="bg-white dark:bg-black transition-colors duration-300">
       <header class="mx-auto max-w-4xl py-8">
         <div class="flex items-center justify-between">
-          <a href="/" class="text-2xl font-semibold" transition:animate="fade">Brook2</a>
+          <a href="/" class="text-2xl font-semibold" transition:animate="fade">AI Weekly</a>
 
           <!-- Desktop Navigation -->
           <div class="hidden md:flex items-center gap-6">
             <nav class="flex items-center gap-6">
-              <a href="/" class="nav-link">Home</a>
-              <a href="/journal" class="nav-link">Journal</a>
-              <a href="/about" class="nav-link">About</a>
-              <a href="/styleguide" class="nav-link">Styleguide</a>
+              <a href="/" class={currentPath === '/' ? 'nav-link font-bold underline underline-offset-4 decoration-2' : 'nav-link'}>首页</a>
+              <a href="/weekly" class={currentPath === '/weekly' || currentPath === '/weekly/' || currentPath.startsWith('/weekly/') ? 'nav-link font-bold underline underline-offset-4 decoration-2' : 'nav-link'}>周刊</a>
+              <a href="/journal" class={currentPath === '/journal' || currentPath === '/journal/' || currentPath.startsWith('/journal/') ? 'nav-link font-bold underline underline-offset-4 decoration-2' : 'nav-link'}>归档</a>
+              <a href="/search" class={currentPath === '/search' || currentPath === '/search/' ? 'nav-link font-bold underline underline-offset-4 decoration-2' : 'nav-link'}>搜索</a>
+              <a href="/about" class={currentPath === '/about' || currentPath === '/about/' ? 'nav-link font-bold underline underline-offset-4 decoration-2' : 'nav-link'}>关于</a>
             </nav>
             <DarkModeToggle />
           </div>
@@ -147,7 +149,7 @@ const jsonLD = type === 'article' && jsonLDArticle ? jsonLDArticle : jsonLDWebsi
               type="button"
               class="inline-flex items-center justify-center p-2 bg-white dark:bg-black text-gray-900 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 focus:outline-none border-0"
               aria-expanded="false"
-              aria-label="Toggle menu"
+              aria-label="切换菜单"
             >
             <svg id="menu-icon" class="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
@@ -161,29 +163,35 @@ const jsonLD = type === 'article' && jsonLDArticle ? jsonLDArticle : jsonLDWebsi
 
         <!-- Mobile Navigation -->
         <nav id="mobile-menu" class="hidden md:hidden mt-6 pt-4 border-t border-gray-200 dark:border-gray-800 space-y-1">
-          <a href="/" class="block px-3 py-2 text-sm text-gray-900 dark:text-gray-300 hover:underline">Home</a>
-          <a href="/journal" class="block px-3 py-2 text-sm text-gray-900 dark:text-gray-300 hover:underline">Journal</a>
-          <a href="/about" class="block px-3 py-2 text-sm text-gray-900 dark:text-gray-300 hover:underline">About</a>
-          <a href="/styleguide" class="block px-3 py-2 text-sm text-gray-900 dark:text-gray-300 hover:underline">Styleguide</a>
+          <a href="/" class={currentPath === '/' ? 'block px-3 py-2 text-sm font-bold underline underline-offset-4 text-gray-900 dark:text-gray-100' : 'block px-3 py-2 text-sm text-gray-900 dark:text-gray-300 hover:underline'}>首页</a>
+          <a href="/weekly" class={currentPath === '/weekly' || currentPath === '/weekly/' || currentPath.startsWith('/weekly/') ? 'block px-3 py-2 text-sm font-bold underline underline-offset-4 text-gray-900 dark:text-gray-100' : 'block px-3 py-2 text-sm text-gray-900 dark:text-gray-300 hover:underline'}>周刊</a>
+          <a href="/journal" class={currentPath === '/journal' || currentPath === '/journal/' || currentPath.startsWith('/journal/') ? 'block px-3 py-2 text-sm font-bold underline underline-offset-4 text-gray-900 dark:text-gray-100' : 'block px-3 py-2 text-sm text-gray-900 dark:text-gray-300 hover:underline'}>归档</a>
+          <a href="/search" class={currentPath === '/search' || currentPath === '/search/' ? 'block px-3 py-2 text-sm font-bold underline underline-offset-4 text-gray-900 dark:text-gray-100' : 'block px-3 py-2 text-sm text-gray-900 dark:text-gray-300 hover:underline'}>搜索</a>
+          <a href="/about" class={currentPath === '/about' || currentPath === '/about/' ? 'block px-3 py-2 text-sm font-bold underline underline-offset-4 text-gray-900 dark:text-gray-100' : 'block px-3 py-2 text-sm text-gray-900 dark:text-gray-300 hover:underline'}>关于</a>
         </nav>
       </header>
       
-      <main class="py-10" transition:animate="fade">
+      <main class="pt-4 pb-10" transition:animate="fade">
         <slot />
       </main>
       
-      <footer class="max-w-4xl mx-auto py-8 border-t border-gray-200 dark:border-gray-800 mt-12">
-          <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="text-sm text-gray-500 dark:text-gray-500">
-              Made by <a href="https://templatedeck.com" target="_blank" rel="noopener noreferrer" class="hover:text-gray-900 dark:hover:text-gray-100">templatedeck.com</a>
-            </div>
-            <nav class="flex items-center gap-4">
-              <a href="/" class="nav-link-footer">Home</a>
-              <a href="/journal" class="nav-link-footer">Journal</a>
-              <a href="/about" class="nav-link-footer">About</a>
-              <a href="/styleguide" class="nav-link-footer">Styleguide</a>
-            </nav>
+      <footer id="site-footer" class="max-w-4xl mx-auto py-8 border-t border-gray-200 dark:border-gray-800 mt-12">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div class="text-sm text-gray-400 dark:text-gray-600 tracking-wide">
+            由 <span class="font-medium text-gray-700 dark:text-gray-300">zmt</span> 制作
           </div>
+          <nav class="flex items-center gap-1 text-sm">
+            <a href="/" class="nav-link-footer px-3 py-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">首页</a>
+            <span class="text-gray-300 dark:text-gray-700">·</span>
+            <a href="/weekly" class="nav-link-footer px-3 py-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">周刊</a>
+            <span class="text-gray-300 dark:text-gray-700">·</span>
+            <a href="/journal" class="nav-link-footer px-3 py-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">归档</a>
+            <span class="text-gray-300 dark:text-gray-700">·</span>
+            <a href="/search" class="nav-link-footer px-3 py-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">搜索</a>
+            <span class="text-gray-300 dark:text-gray-700">·</span>
+            <a href="/about" class="nav-link-footer px-3 py-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">关于</a>
+          </nav>
+        </div>
       </footer>
     </div>
 
@@ -250,14 +258,26 @@ const jsonLD = type === 'article' && jsonLDArticle ? jsonLDArticle : jsonLDWebsi
         });
       }
 
+      // Make external links open in new tab
+      function initExternalLinks() {
+        document.querySelectorAll('a[href^="http"]').forEach(link => {
+          if (link.hostname !== location.hostname) {
+            link.setAttribute('target', '_blank');
+            link.setAttribute('rel', 'noopener noreferrer');
+          }
+        });
+      }
+
       // Initialize on page load
       initMobileMenu();
       initThemeToggle();
+      initExternalLinks();
 
       // Re-initialize after view transitions
       document.addEventListener('astro:after-swap', () => {
         initMobileMenu();
         initThemeToggle();
+        initExternalLinks();
       });
     </script>
     <Analytics />

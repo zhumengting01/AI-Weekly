@@ -8,7 +8,10 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "generate": "python scripts/generate_weekly.py",
+    "generate:dry": "python scripts/generate_weekly.py --dry-run",
+    "setup-cron": "powershell -ExecutionPolicy Bypass -File scripts/setup-cron.ps1"
   },
   "dependencies": {
     "@astrojs/mdx": "^5.0.3",

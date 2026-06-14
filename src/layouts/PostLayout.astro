@@ -1,6 +1,7 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 import PostNavigation from '../components/PostNavigation.astro';
+import TableOfContents from '../components/TableOfContents.astro';
 import { formatDate } from '../utils/date';
 import { optimizeImagePath } from '../utils/optimizeImagePath';
 
@@ -29,21 +30,22 @@ const publishDate = new Date(date);
   type="article"
   publishedDate={publishDate}
 >
-  <article id="main-content">
-    <header class="max-w-3xl mx-auto mb-10">
+  <div class="max-w-[72rem] mx-auto px-4 flex gap-12">
+  <article id="main-content" class="flex-1 min-w-0">
+    <header class="max-w-4xl mb-10">
       <div class="text-gray-500 text-sm mb-2">
-        <time datetime={publishDate.toISOString()}>{formatDate(date)}</time> • <span aria-label={`${readingTime} minute read`}>{readingTime} min read</span>
+        <time datetime={publishDate.toISOString()}>{formatDate(date)}</time> • <span aria-label={`${readingTime} 分钟阅读`}>{readingTime} 分钟阅读</span>
       </div>
       <h1 class="text-5xl mb-6" transition:name={`title-${slug}`}>{title}</h1>
       {excerpt && <p class="text-xl text-gray-500">{excerpt}</p>}
 
       {tags && tags.length > 0 && (
-        <div class="mt-4 mb-4 flex flex-wrap gap-2" aria-label="Tags">
+        <div class="mt-4 mb-4 flex flex-wrap gap-2" aria-label="标签">
           {tags.map((tag) => (
             <a
               href={`/tags/${tag}`}
               class="tag"
-              aria-label={`View all posts tagged ${tag}`}
+              aria-label={`查看所有标签为 ${tag} 的文章`}
             >
               {tag}
             </a>
@@ -56,7 +58,7 @@ const publishDate = new Date(date);
       <div class="max-w-4xl mx-auto mt-2 mb-10 feature-image" transition:name={`image-${slug}`}>
         <img
           src={optimizedImagePath}
-          alt={`Featured image for "${title}"`}
+          alt={`文章"${title}"的特色图片`}
           class="w-full h-full object-cover"
           loading="eager"
           decoding="async"
@@ -66,12 +68,106 @@ const publishDate = new Date(date);
       </div>
     )}
 
-    <div class="max-w-3xl mx-auto prose prose-xl">
+    <div class="max-w-4xl prose prose-xl">
       <slot />
     </div>
 
-    <div class="max-w-3xl mx-auto">
+    <div class="max-w-4xl">
       <PostNavigation prevPost={prevPost} nextPost={nextPost} />
     </div>
+
+    <footer class="max-w-4xl py-8 border-t border-gray-200 dark:border-gray-800 mt-12">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="text-sm text-gray-400 dark:text-gray-600 tracking-wide">
+          由 <span class="font-medium text-gray-700 dark:text-gray-300">zmt</span> 制作
+        </div>
+        <nav class="flex items-center gap-1 text-sm">
+          <a href="/" class="nav-link-footer px-3 py-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">首页</a>
+          <span class="text-gray-300 dark:text-gray-700">·</span>
+          <a href="/weekly" class="nav-link-footer px-3 py-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">周刊</a>
+          <span class="text-gray-300 dark:text-gray-700">·</span>
+          <a href="/journal" class="nav-link-footer px-3 py-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">日志</a>
+          <span class="text-gray-300 dark:text-gray-700">·</span>
+          <a href="/search" class="nav-link-footer px-3 py-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">搜索</a>
+          <span class="text-gray-300 dark:text-gray-700">·</span>
+          <a href="/about" class="nav-link-footer px-3 py-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">关于</a>
+        </nav>
+      </div>
+    </footer>
   </article>
+
+  <div class="translate-x-16"><TableOfContents headings={headings} /></div>
+</div>
+
+<style is:global>
+  body:has(article#main-content) #site-footer {
+    display: none;
+  }
+
+  /* Weekly section heading styles */
+  article#main-content .prose h1 {
+    position: relative;
+    padding: 1rem 1.25rem;
+    margin-top: 3rem;
+    margin-bottom: 1.5rem;
+    background-color: #f3f4f6;
+    border-left: 4px solid #111827;
+    border-radius: 0 0.5rem 0.5rem 0;
+    font-size: 1.875rem;
+    line-height: 1.3;
+  }
+
+  :global(.dark) article#main-content .prose h1 {
+    background-color: #1f2937;
+    border-left-color: #f3f4f6;
+  }
+
+  article#main-content .prose h1:first-of-type {
+    margin-top: 1.5rem;
+  }
+
+  article#main-content .prose h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+  }
+</style>
+
+  <!-- 回到顶端按钮 -->
+  <button
+    id="back-to-top"
+    class="fixed bottom-8 right-8 z-50 w-12 h-12 rounded-full bg-black dark:bg-white text-white dark:text-black shadow-lg flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 hover:scale-110 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+    aria-label="回到顶端"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" y1="19" x2="12" y2="5"></line>
+      <polyline points="5 12 12 5 19 12"></polyline>
+    </svg>
+  </button>
+
+  <script>
+    function initBackToTop() {
+      const btn = document.getElementById('back-to-top');
+      if (!btn) return;
+
+      const toggleVisibility = () => {
+        if (window.scrollY > 400) {
+          btn.classList.remove('opacity-0', 'pointer-events-none');
+          btn.classList.add('opacity-100', 'pointer-events-auto');
+        } else {
+          btn.classList.add('opacity-0', 'pointer-events-none');
+          btn.classList.remove('opacity-100', 'pointer-events-auto');
+        }
+      };
+
+      window.addEventListener('scroll', toggleVisibility, { passive: true });
+      btn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+
+    initBackToTop();
+    document.addEventListener('astro:after-swap', initBackToTop);
+  </script>
 </BaseLayout>
