@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+﻿#!/usr/bin/env pwsh
 <#
 .SYNOPSIS
     设置 AI Weekly 周刊自动生成的 Windows 定时任务
@@ -45,28 +45,40 @@ if ($existing) {
 }
 
 # 构建执行脚本内容
-$ScriptContent = @"
-# AI Weekly 自动生成 - $(Get-Date -Format 'yyyy-MM-dd')
-Set-Location "$ProjectRoot"
+# 使用单引号 here-string 避免变量展开，再用 -replace 替换占位符
+$ScriptContent = @'
+# AI Weekly 自动生成 - {{DATE}}
+Set-Location "{{PROJECT_ROOT}}"
 
 # 加载环境变量
-if (Test-Path "$ProjectRoot\scripts\.env") {
-    Get-Content "$ProjectRoot\scripts\.env" | ForEach-Object {
-        if (`$_ -match '^\s*([^#][^=]+)=(.*)$') {
-            [System.Environment]::SetEnvironmentVariable(`$matches[1], `$matches[2], 'Process')
+if (Test-Path "{{PROJECT_ROOT}}\scripts\.env") {
+    Get-Content "{{PROJECT_ROOT}}\scripts\.env" | ForEach-Object {
+        if ($_ -match '^\s*([^#][^=]+)=(.*)$') {
+            [System.Environment]::SetEnvironmentVariable($matches[1], $matches[2], 'Process')
         }
     }
 }
 
 # 生成周刊
 Write-Host "[$((Get-Date).ToString('yyyy-MM-dd HH:mm:ss'))] 开始生成周刊..."
-& "$PythonPath" "$PythonScript" 2>&1 | Tee-Object -FilePath "$LogFile" -Append
+& "{{PYTHON_PATH}}" "{{PYTHON_SCRIPT}}" 2>&1 | Tee-Object -FilePath "{{LOG_FILE}}" -Append
 
 Write-Host "[$((Get-Date).ToString('yyyy-MM-dd HH:mm:ss'))] 周刊生成完成"
-"@
+'@
+
+$ScriptContent = $ScriptContent -replace '\{\{DATE\}\}', (Get-Date -Format 'yyyy-MM-dd')
+$ScriptContent = $ScriptContent -replace '\{\{PROJECT_ROOT\}\}', $ProjectRoot
+$ScriptContent = $ScriptContent -replace '\{\{PYTHON_PATH\}\}', $PythonPath
+$ScriptContent = $ScriptContent -replace '\{\{PYTHON_SCRIPT\}\}', $PythonScript
+$ScriptContent = $ScriptContent -replace '\{\{LOG_FILE\}\}', $LogFile
 
 $ScriptPath = Join-Path $ProjectRoot "scripts\run-weekly.ps1"
 $ScriptContent | Out-File -FilePath $ScriptPath -Encoding UTF8
+# 移除 UTF-8 BOM，避免 PowerShell 5 解析中文出错
+$bytes = [System.IO.File]::ReadAllBytes($ScriptPath)
+if ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF) {
+    [System.IO.File]::WriteAllBytes($ScriptPath, $bytes[3..($bytes.Length - 1)])
+}
 
 # 创建计划任务
 $Action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$ScriptPath`""
