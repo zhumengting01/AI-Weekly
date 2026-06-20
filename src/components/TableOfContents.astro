@@ -19,6 +19,9 @@ const tocHeadings = headings.filter(h => h.depth >= 1 && h.depth <= 3);
   <nav class="toc-container" aria-label="目录导航">
     <div id="toc-list" class="toc-list">
       <div class="toc-title">目录</div>
+      <div class="toc-progress">
+        <div class="toc-progress-bar" id="toc-progress-bar"></div>
+      </div>
       <ul>
         {tocHeadings.map((heading) => (
           <li class={`toc-item toc-depth-${heading.depth}`}>
@@ -62,6 +65,7 @@ const tocHeadings = headings.filter(h => h.depth >= 1 && h.depth <= 3);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
     max-height: calc(100vh - 10rem);
     overflow-y: auto;
+    position: relative;
   }
 
   :global(.dark) .toc-list {
@@ -75,11 +79,35 @@ const tocHeadings = headings.filter(h => h.depth >= 1 && h.depth <= 3);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: #9ca3af;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
   }
 
   :global(.dark) .toc-title {
     color: #6b7280;
+  }
+
+  .toc-progress {
+    height: 2px;
+    background: #e5e7eb;
+    border-radius: 1px;
+    margin-bottom: 0.75rem;
+    overflow: hidden;
+  }
+
+  :global(.dark) .toc-progress {
+    background: #374151;
+  }
+
+  .toc-progress-bar {
+    height: 100%;
+    width: 0%;
+    background: #111827;
+    border-radius: 1px;
+    transition: width 0.15s ease-out;
+  }
+
+  :global(.dark) .toc-progress-bar {
+    background: #f3f4f6;
   }
 
   .toc-list ul {
@@ -100,7 +128,7 @@ const tocHeadings = headings.filter(h => h.depth >= 1 && h.depth <= 3);
     line-height: 1.4;
     color: #6b7280;
     text-decoration: none;
-    transition: color 0.2s;
+    transition: color 0.25s ease, border-color 0.25s ease, padding-left 0.25s ease;
     border-left: 2px solid transparent;
     padding-left: 0.5rem;
   }
@@ -117,6 +145,7 @@ const tocHeadings = headings.filter(h => h.depth >= 1 && h.depth <= 3);
     color: #111827;
     font-weight: 500;
     border-left-color: #111827;
+    padding-left: 0.75rem;
   }
 
   :global(.dark) .toc-link.active {
@@ -132,6 +161,10 @@ const tocHeadings = headings.filter(h => h.depth >= 1 && h.depth <= 3);
   .toc-depth-3 .toc-link {
     padding-left: 1.25rem;
     font-size: 0.75rem;
+  }
+
+  .toc-depth-3 .toc-link.active {
+    padding-left: 1.5rem;
   }
 
   /* Scrollbar styling */
@@ -155,50 +188,110 @@ const tocHeadings = headings.filter(h => h.depth >= 1 && h.depth <= 3);
 
 <script>
   function initTableOfContents() {
-    // Active heading tracking
     const tocLinks = document.querySelectorAll<HTMLAnchorElement>('.toc-link');
-    if (tocLinks.length === 0) return;
+    const tocList = document.getElementById('toc-list');
+    const progressBar = document.getElementById('toc-progress-bar');
+    if (tocLinks.length === 0 || !tocList) return;
 
-    const headings = Array.from(tocLinks)
+    // Collect heading elements
+    const headingElements = Array.from(tocLinks)
       .map(link => {
         const slug = link.getAttribute('data-heading-slug');
         return slug ? document.getElementById(slug) : null;
       })
       .filter(Boolean) as HTMLElement[];
 
-    if (headings.length === 0) return;
+    if (headingElements.length === 0) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const id = entry.target.id;
-            tocLinks.forEach(link => {
-              if (link.getAttribute('data-heading-slug') === id) {
-                link.classList.add('active');
-              } else {
-                link.classList.remove('active');
-              }
-            });
+    let currentActiveSlug: string | null = null;
+    let ticking = false;
+
+    function updateActiveHeading() {
+      const scrollTop = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const docHeight = document.documentElement.scrollHeight;
+
+      // Update progress bar
+      if (progressBar) {
+        const scrollPercent = Math.min(
+          (scrollTop / (docHeight - windowHeight)) * 100,
+          100
+        );
+        progressBar.style.width = `${scrollPercent}%`;
+      }
+
+      // Find the current heading: the last heading whose top is above the viewport midpoint
+      const offset = 100; // offset from top to account for fixed header etc.
+      let activeSlug: string | null = null;
+
+      for (let i = headingElements.length - 1; i >= 0; i--) {
+        const heading = headingElements[i];
+        const rect = heading.getBoundingClientRect();
+        if (rect.top <= offset) {
+          activeSlug = heading.id;
+          break;
+        }
+      }
+
+      // If we're at the top of the page, highlight the first heading
+      if (scrollTop < 50 && headingElements.length > 0) {
+        activeSlug = headingElements[0].id;
+      }
+
+      // Update active state only if changed
+      if (activeSlug !== currentActiveSlug) {
+        currentActiveSlug = activeSlug;
+
+        tocLinks.forEach(link => {
+          const slug = link.getAttribute('data-heading-slug');
+          if (slug === activeSlug) {
+            link.classList.add('active');
+            // Scroll the TOC to keep the active item visible
+            scrollTocToActive(link);
+          } else {
+            link.classList.remove('active');
           }
         });
-      },
-      {
-        rootMargin: '-80px 0px -70% 0px',
-        threshold: 0,
       }
-    );
 
-    headings.forEach(heading => observer.observe(heading));
+      ticking = false;
+    }
 
-    // Smooth scroll on click
+    function scrollTocToActive(activeLink: HTMLAnchorElement) {
+      const listRect = tocList.getBoundingClientRect();
+      const linkRect = activeLink.getBoundingClientRect();
+
+      // If the active link is outside the visible area of the TOC
+      if (linkRect.top < listRect.top || linkRect.bottom > listRect.bottom) {
+        activeLink.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+        });
+      }
+    }
+
+    function onScroll() {
+      if (!ticking) {
+        requestAnimationFrame(updateActiveHeading);
+        ticking = true;
+      }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    // Initial update
+    updateActiveHeading();
+
+    // Smooth scroll on TOC link click
     tocLinks.forEach(link => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
         const slug = link.getAttribute('data-heading-slug');
         const target = slug ? document.getElementById(slug) : null;
         if (target) {
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          const offset = 80; // account for sticky header
+          const top = target.getBoundingClientRect().top + window.scrollY - offset;
+          window.scrollTo({ top, behavior: 'smooth' });
         }
       });
     });
