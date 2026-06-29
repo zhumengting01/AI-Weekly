@@ -58,11 +58,23 @@
   
   /* Navigation */
   .nav-link {
-    @apply text-sm text-gray-900 dark:text-gray-300 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-sm;
+    @apply text-sm text-gray-900 dark:text-gray-300 hover:underline rounded-sm;
+  }
+
+  .nav-link:focus,
+  .nav-link:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
   }
 
   .nav-link-footer {
-    @apply text-sm text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-sm;
+    @apply text-sm text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 rounded-sm;
+  }
+
+  .nav-link-footer:focus,
+  .nav-link-footer:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
   }
   
   /* Feature image */
@@ -215,9 +227,20 @@
     @apply text-black dark:text-gray-100 hover:underline;
   }
   
+  /* Remove focus rings from all navigation links */
+  header a:focus,
+  header a:focus-visible,
+  nav a:focus,
+  nav a:focus-visible,
+  footer a:focus,
+  footer a:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
+  
   /* Fix for focus rings */
   a:focus-visible {
-    @apply outline-none ring-2 ring-blue-500 ring-offset-2;
+    @apply outline-none;
   }
   
   /* Heading links (when a heading is wrapped in an anchor) */

@@ -34,7 +34,7 @@ const posts = sortedPosts.slice(0, 5).map(post => ({
       <p class="text-2xl text-muted-foreground max-w-3xl mx-auto mb-14">
         每周精选 AI 领域热点新闻、工具推荐和开源项目
       </p>
-      <a href="/weekly" class="btn-primary btn-lg tracking-wide no-underline hover:no-underline transform transition-all duration-300 hover:scale-105 hover:shadow-[0_3.5rem_5rem_rgba(21,21,21,0.3)] shadow-[0_3rem_4rem_rgba(21,21,21,0.25)] dark:bg-white dark:text-black dark:hover:bg-gray-100">
+      <a href={latestWeekly.length > 0 ? latestWeekly[0].url : '/weekly'} class="btn-primary btn-lg tracking-wide no-underline hover:no-underline transform transition-all duration-300 hover:scale-105 hover:shadow-[0_3.5rem_5rem_rgba(21,21,21,0.3)] shadow-[0_3rem_4rem_rgba(21,21,21,0.25)] dark:bg-white dark:text-black dark:hover:bg-gray-100">
         阅读最新周刊
       </a>
     </section>
@@ -44,7 +44,7 @@ const posts = sortedPosts.slice(0, 5).map(post => ({
         <PostList posts={latestWeekly} showExcerpt={true} showTags={true} title="最新周刊" />
 
         <div class="text-center mt-12">
-          <a href="/weekly" class="text-lg font-medium text-black dark:text-white py-2 px-4 rounded-md inline-block focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 hover:underline">
+          <a href="/weekly" class="text-lg font-medium text-black dark:text-white py-2 px-4 rounded-md inline-block focus:outline-none hover:underline">
             查看所有周刊 <span aria-hidden="true">→</span>
           </a>
         </div>
@@ -56,7 +56,7 @@ const posts = sortedPosts.slice(0, 5).map(post => ({
         <PostList posts={posts} showImages={false} showExcerpt={false} showSeparators={true} showTags={false}/>
 
         <div class="text-center mt-24">
-          <a href="/journal" class="text-lg font-medium text-black dark:text-white py-2 px-4 rounded-md inline-block focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 hover:underline">
+          <a href="/journal" class="text-lg font-medium text-black dark:text-white py-2 px-4 rounded-md inline-block focus:outline-none hover:underline">
             查看所有文章 <span aria-hidden="true">→</span>
           </a>
         </div>

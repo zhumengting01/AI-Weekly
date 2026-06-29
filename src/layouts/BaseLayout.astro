@@ -268,16 +268,30 @@ const jsonLD = type === 'article' && jsonLDArticle ? jsonLDArticle : jsonLDWebsi
         });
       }
 
+      // Remove focus from navigation links after click
+      function initNavBlur() {
+        document.querySelectorAll('header a, nav a, footer a').forEach(link => {
+          link.addEventListener('click', () => {
+            link.blur();
+          });
+        });
+      }
+
       // Initialize on page load
       initMobileMenu();
       initThemeToggle();
       initExternalLinks();
+      initNavBlur();
 
       // Re-initialize after view transitions
       document.addEventListener('astro:after-swap', () => {
         initMobileMenu();
         initThemeToggle();
         initExternalLinks();
+        initNavBlur();
+        // Blur any focused element after transition
+        const focused = document.activeElement;
+        if (focused) focused.blur();
       });
     </script>
     <Analytics />
