@@ -110,7 +110,7 @@
   
   /* Post navigation */
   .post-nav-link {
-    @apply flex flex-col focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded p-2 -m-2;
+    @apply flex flex-col focus:outline-none focus:ring-0 rounded p-2 -m-2;
   }
 
   .post-nav-direction {
