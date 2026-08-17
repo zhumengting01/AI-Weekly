@@ -1,4 +1,4 @@
-# AI Weekly 自动生成 - 2026-06-20
+# AI Weekly 自动生成 - 2026-08-17
 Set-Location "D:\ai-weekly\AI-Weekly"
 
 # 加载环境变量

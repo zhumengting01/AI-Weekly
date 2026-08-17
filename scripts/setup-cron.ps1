@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env pwsh
+#!/usr/bin/env pwsh
 <#
 .SYNOPSIS
     设置 AI Weekly 周刊自动生成的 Windows 定时任务
@@ -82,15 +82,15 @@ if ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $by
 
 # 创建计划任务
 $Action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$ScriptPath`""
-$Trigger = New-ScheduledTaskTrigger -Weekly -DaysOfWeek Monday -At 7:00AM
+$Trigger = New-ScheduledTaskTrigger -Weekly -DaysOfWeek Monday -At 10:00AM
 $Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 5)
 
-Register-ScheduledTask -TaskName $TaskName -Action $Action -Trigger $Trigger -Settings $Settings -Description "每周一上午7:00自动生成AI Weekly周刊" -Force
+Register-ScheduledTask -TaskName $TaskName -Action $Action -Trigger $Trigger -Settings $Settings -Description "每周一上午10:00自动生成AI Weekly周刊" -Force
 
 Write-Host ""
 Write-Host "=== 定时任务设置完成 ==="
 Write-Host "任务名称: $TaskName"
-Write-Host "执行时间: 每周一 07:00"
+Write-Host "执行时间: 每周一 10:00"
 Write-Host "执行脚本: $ScriptPath"
 Write-Host "日志文件: $LogFile"
 Write-Host ""
