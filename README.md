@@ -1,211 +1,150 @@
-# AI Weekly 当前工作方式（无需项目 API 密钥）
+# AI Weekly · 中文 AI 周刊
 
-在本项目对话中提出“整理本周 AI 周刊”，由助手检索并核实公开来源，撰写内容，保存到 `src/content/weekly/ai-weekly-NNN.md`，然后运行 `npm run build` 检查并生成 `dist/`。
+每周精选人工智能领域值得关注的信息，覆盖模型与产品、国内动态、开源工具、科研进展和行业应用，帮助读者了解过去一周的 AI 变化。
 
-可用 `npm run dev` 本地预览。GitHub 推送和网站部署需要对应账号授权。
+项目基于 Astro 构建，使用 Markdown 管理周刊，生成可部署的静态网站。
 
-旧 API 自动生成入口和定时任务安装已停用，旧代码仅供参考。移除旧 Windows 定时任务可执行 `powershell -File scripts/setup-cron.ps1 -Uninstall`。本地 `.env` 不再保存密钥。
+## 内容与功能
 
-注意：删除当前文件中的密钥不会撤销密钥，也不会清理 Git 历史；曾暴露的密钥应在服务商处撤销。
+- **每周精选**：每期以 8—12 条资讯为编辑目标，重要事件展开解读，结合新闻密度灵活调整。
+- **明确时间范围**：按周整理，收录对应周内发布的公告、研究或活动信息。
+- **可追溯来源**：保留原文链接，优先采用官方公告、项目仓库和论文。
+- **一周观察**：结合当周动态，分析技术变化及其实际影响。
+- **便捷阅读**：支持周刊归档、关键词搜索、标签筛选和 RSS 订阅。
+- **阅读体验**：响应式布局、深浅色模式、文章目录与相邻周刊导航。
 
-以下为原始模板说明。
+## 本地运行
 
-<!-- templatedeck-backlink -->
-> 🎨 **BROOK 2** is part of the [TemplateDeck](https://templatedeck.com) collection — handcrafted HTML and Astro templates for developers and designers.
->
-> 📥 **[Download free on TemplateDeck](https://templatedeck.com/templates/brook2)** · 🌐 **[Browse all templates](https://templatedeck.com)**
+### 环境要求
 
----
+Node.js **22.12.0 或更新版本**，npm **9.6.5 或更新版本**；也可使用 pnpm。
 
-# Brook - A Minimalist Blog Template Built with Astro
-
-![Brook Blog](./cover.png)
-
-**[Live Demo](https://brook2-astro-blog.vercel.app/)**
-
-Brook is a minimalist blog template for developers and writers that focuses on clean typography and a distraction-free reading experience.
-
-## ✨ Features
-
-- **Clean Minimalist Design**: Elegant layout focused on readability and content
-- **Full Dark/Light Mode**: Complete support for both modes with smooth transitions
-- **Responsive Design**: Optimized for all device sizes
-- **Content Collections**: Organized content using Astro's content collections
-- **Markdown/MDX Support**: Write your content in Markdown with optional JSX support
-- **Image Optimization**: Automatic image processing and optimization
-- **View Transitions**: Smooth page transitions with Astro's view transitions API
-- **Tagging System**: Categorize and filter posts using tags
-- **Code Syntax Highlighting**: Beautiful syntax highlighting for code blocks
-- **SEO Optimized**: Built-in meta tags and structured data (JSON-LD)
-- **Type-Safe**: Fully typed with TypeScript
-- **Reading Time**: Automatic calculation of estimated reading time
-- **Accessible**: Built with accessibility in mind
-- **Fast Performance**: Optimized for web vitals with minimal JavaScript
-- **RSS Feed**: Auto-generated RSS feed
-
-## 🚀 Getting Started
+### 获取项目并启动
 
 ```bash
-# Clone the repository
-git clone https://github.com/holger1411/astro-brook.git
-cd astro-brook
-
-# Install dependencies
+git clone https://github.com/zhumengting01/AI-Weekly.git
+cd AI-Weekly
 npm install
-
-# Start the development server
 npm run dev
 ```
 
-Visit [http://localhost:4321](http://localhost:4321) to see the result.
+打开本地地址：
 
-## 📁 Project Structure
+- 首页：<http://localhost:4321/>
+- 周刊列表：<http://localhost:4321/weekly/>
+- 搜索：<http://localhost:4321/search/>
+- RSS：<http://localhost:4321/rss.xml>
 
-```
-├── public/               # Static assets
-├── src/
-│   ├── assets/           # Optimized assets (images, etc.)
-│   ├── components/       # Reusable components
-│   │   ├── PostCard.astro      # Blog post preview card
-│   │   ├── PostList.astro      # List of blog posts
-│   │   ├── PostNavigation.astro # Next/previous post navigation
-│   │   └── ui/                 # UI components
-│   ├── content/          # Content directory (using Astro Content Collections)
-│   │   └── posts/        # Blog posts (Markdown/MDX)
-│   ├── layouts/          # Astro layouts
-│   │   ├── BaseLayout.astro    # Base layout
-│   │   └── PostLayout.astro    # Layout for blog posts
-│   ├── pages/            # Astro pages
-│   │   ├── about.astro         # About page
-│   │   ├── index.astro         # Homepage
-│   │   ├── journal.astro       # Blog overview page
-│   │   ├── posts/[slug].astro    # Dynamic blog post route
-│   │   └── tags/[tag].astro    # Tag-based filtering
-│   ├── styles/           # Stylesheets
-│   └── utils/            # Helper functions and utilities
-└── astro.config.mjs      # Astro configuration
-```
+保持终端运行即可持续预览；修改文章后页面会更新。停止服务时按 `Ctrl+C`。如果默认端口被占用，以终端输出的地址为准。
 
-## 📝 Adding Content
+项目已包含 `pnpm-lock.yaml`。使用 pnpm 时，可将安装和启动命令替换为 `pnpm install` 与 `pnpm dev`。
 
-### Creating a New Blog Post
+## 周刊更新方式
 
-1. Create a new `.md` or `.mdx` file in the `src/content/posts/` directory
-2. Add frontmatter metadata:
+当前通过项目对话协助检索、核实与撰写，再将内容保存到 Markdown 文件。阅读、编辑和构建网站无需配置额外的大模型 API 密钥。
 
-```mdx
+### 1. 确定新闻周期
+
+以每周一整理上一周周一至周日的信息为常用安排，正文明确写出新闻覆盖日期。选题按信息的实际发布或发生时间归入对应周次，避免把旧消息当作当周新发布。
+
+### 2. 核实来源并撰写
+
+优先查阅发布方官网、官方仓库、论文及主办方资料。区分已上线功能、研究结果、测试计划与未来承诺；性能和成本数字注明厂商或研究的测试口径。
+
+常用栏目如下，可按当周信息调整：
+
+- 本周焦点：2—3 条重要动态。
+- 模型与产品：模型发布、产品更新与开发工具。
+- 国内动态与开源：国产模型、开源项目与社区进展。
+- 科研与应用：研究论文、行业案例与实际落地。
+- 一周观察：提炼当周趋势和使用启发。
+
+### 3. 保存文章
+
+周刊位于 `src/content/weekly/`，文件示例为 `ai-weekly-020.md`。填写实际日期与内容：
+
+```markdown
 ---
-title: My New Blog Post
-date: 2025-03-01
-excerpt: A short description of the blog post
-image: /images/my-image.jpg
-tags: [tag1, tag2]
+title: "本期主题标题"
+date: 2026-10-26
+excerpt: "一句话概括本期关注的模型、产品、开源或科研动态。"
+tags: [AI, 周刊]
 ---
 
-Here goes the content of the blog post.
+本期回顾 **2026 年 10 月 19 日—10 月 25 日**的 AI 动态。
 
-## A Heading
+# 本周焦点
 
-More text and content...
+## 新闻标题
+
+说明发布日期、事件要点和实际影响。
+
+[阅读原文：发布机构 · 原文标题](https://example.com/original-announcement)
+
+---
+
+# 一周观察
+
+结合本期事实，提炼值得关注的变化。
 ```
 
-### Images
+上方日期、主题和链接仅用于展示格式，发布前替换为对应周次的真实信息。图片可放入 `public/images/`，在正文中用 `/images/文件名` 引用。
 
-For images in your blog posts:
+网站按文章的 `date` 排序并生成年度周标题；历史文件编号不完全对应时间顺序，维护时以正文新闻范围和 `date` 为准。
 
-1. Place images in the `public/images/` directory
-2. Reference them in your frontmatter and content using the path `/images/my-image.jpg`
+### 4. 预览与检查
 
-## 🎨 Customization
+执行 `npm run dev`，检查文章日期、来源、目录、排版与链接，再执行 `npm run build` 检查生产构建。
 
-### Theme Customization
+旧的 API 自动生成与定时任务安装入口已停用，`npm run generate`、`npm run generate:dry` 和 `npm run setup-cron` 不属于当前更新流程。旧脚本保留在 `scripts/` 中供参考。
 
-The color palette and other design elements can be customized in the `tailwind.config.mjs` file and `src/styles/global.css`:
-
-```javascript
-// tailwind.config.mjs
-export default {
-  theme: {
-    extend: {
-      colors: {
-        // Customize colors here
-      },
-      typography: {
-        // Typography settings
-      }
-    }
-  }
-}
-```
-
-### Layout Customization
-
-The main layouts are located in the `src/layouts/` directory.
-
-## 🧩 Technology Stack
-
-- [Astro](https://astro.build/) - Modern web framework
-- [TypeScript](https://www.typescriptlang.org/) - Type safety
-- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
-- [Astro Content Collections](https://docs.astro.build/en/guides/content-collections/) - Content management
-- [MDX](https://mdxjs.com/) - Markdown with JSX (optional)
-
-## 📦 Dependencies
-
-- `@tailwindcss/vite` - Tailwind CSS v4 integration
-- `@astrojs/mdx` - MDX support
-- `@astrojs/sitemap` - Sitemap generation
-- `@astrojs/rss` - RSS feed generation
-- `date-fns` - Date formatting
-
-## 🛠️ Development
+## 构建与部署
 
 ```bash
-# Start development server
-npm run dev
-
-# Build for production
+# 构建静态网站，输出到 dist/
 npm run build
 
-# Preview production build
+# 预览构建结果
 npm run preview
 ```
 
-## 🚀 Deployment
+将 `dist/` 中的静态文件部署至支持静态站点的托管服务。使用 Git 仓库连接部署时，常用构建配置为：
 
-This project can be deployed on any platform that supports Astro:
+| 配置项 | 值 |
+| --- | --- |
+| 项目根目录 | `package.json` 所在目录 |
+| 构建命令 | `npm run build` |
+| 输出目录 | `dist` |
 
-- [Netlify](https://www.netlify.com/)
-- [Vercel](https://vercel.com/)
-- [GitHub Pages](https://pages.github.com/)
-- [Cloudflare Pages](https://pages.cloudflare.com/)
-- [Deno Deploy](https://deno.com/deploy)
+部署前，将 `astro.config.mjs` 的 `site` 与 `src/pages/rss.xml.js` 的 `site` 改为实际站点地址，保证页面规范链接、站点地图和订阅链接一致。
 
-For Netlify (recommended):
+## 项目结构
 
-```bash
-npm install -g netlify-cli
-netlify deploy
+```text
+AI-Weekly/
+├── public/                 # 静态资源与图片
+├── src/
+│   ├── components/         # 列表、卡片、目录及主题切换
+│   ├── content/weekly/     # 周刊 Markdown 内容
+│   ├── layouts/            # 页面与文章布局
+│   ├── pages/              # 首页、归档、搜索、标签与 RSS
+│   ├── styles/             # 全局样式
+│   ├── utils/              # 日期与辅助函数
+│   └── content.config.ts   # 内容集合与字段定义
+├── scripts/                # 历史采集与生成脚本
+├── docs/                   # 项目维护记录
+├── astro.config.mjs        # 站点配置
+└── package.json            # 项目依赖与运行命令
 ```
 
-## 🤝 Contributing
+## 技术栈
 
-Contributions are welcome! Please follow these steps:
+Astro 6、TypeScript、Tailwind CSS 4、Markdown / MDX，以及 Astro RSS 与 Sitemap 集成。
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+## 模板致谢
 
-## 📄 License
+页面基于 [Brook / BROOK 2](https://github.com/holger1411/astro-brook) 模板改造。原模板来自 [TemplateDeck](https://templatedeck.com/templates/brook2)，感谢原作者与开源社区。
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+## 反馈
 
-## ❓ Support
-
-If you have any questions or suggestions, please open an issue or start a discussion.
-
----
-
-Built with ❤️ using Astro, TypeScript, and Tailwind CSS.
+发现内容错误、来源失效或页面问题，欢迎通过 [GitHub Issues](https://github.com/zhumengting01/AI-Weekly/issues) 反馈，并注明对应周刊和具体位置。
