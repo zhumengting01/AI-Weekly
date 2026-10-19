@@ -16,6 +16,10 @@ param(
 )
 
 $TaskName = "AI-Weekly-AutoGenerate"
+if (-not $Uninstall) {
+    Write-Error "API 自动生成已停用，不再创建定时任务。请在项目对话中生成周刊。使用 -Uninstall 可移除旧任务。"
+    exit 1
+}
 $ProjectRoot = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 $PythonScript = Join-Path $ProjectRoot "scripts\generate_weekly.py"
 $LogFile = Join-Path $ProjectRoot "scripts\weekly-cron.log"

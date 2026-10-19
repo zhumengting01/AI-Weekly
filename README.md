@@ -1,3 +1,15 @@
+# AI Weekly 当前工作方式（无需项目 API 密钥）
+
+在本项目对话中提出“整理本周 AI 周刊”，由助手检索并核实公开来源，撰写内容，保存到 `src/content/weekly/ai-weekly-NNN.md`，然后运行 `npm run build` 检查并生成 `dist/`。
+
+可用 `npm run dev` 本地预览。GitHub 推送和网站部署需要对应账号授权。
+
+旧 API 自动生成入口和定时任务安装已停用，旧代码仅供参考。移除旧 Windows 定时任务可执行 `powershell -File scripts/setup-cron.ps1 -Uninstall`。本地 `.env` 不再保存密钥。
+
+注意：删除当前文件中的密钥不会撤销密钥，也不会清理 Git 历史；曾暴露的密钥应在服务商处撤销。
+
+以下为原始模板说明。
+
 <!-- templatedeck-backlink -->
 > 🎨 **BROOK 2** is part of the [TemplateDeck](https://templatedeck.com) collection — handcrafted HTML and Astro templates for developers and designers.
 >

@@ -18,6 +18,12 @@ AI Weekly 周刊自动生成脚本
     ANTHROPIC_MODEL       - 模型名称（默认 mimo-v2.5-pro）
 """
 
+import sys
+
+if __name__ == "__main__":
+    print("API 自动生成已停用。请在项目对话中要求整理本周 AI 周刊，核实来源后写入 src/content/weekly，再运行 npm run build。")
+    sys.exit(1)
+
 import os
 import sys
 import json

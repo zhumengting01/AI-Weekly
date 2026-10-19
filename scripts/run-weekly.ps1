@@ -1,3 +1,7 @@
+# API 自动生成已停用；旧定时任务即使执行此文件也不会调用 API。
+Write-Host "请在项目对话中整理周刊并保存到 src/content/weekly，然后执行 npm run build。"
+exit 1
+
 # AI Weekly 自动生成 - 2026-08-17
 Set-Location "D:\ai-weekly\AI-Weekly"
 

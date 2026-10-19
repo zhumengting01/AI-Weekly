@@ -231,7 +231,7 @@ cd astro-brook && npm run build
 改用小米的token。这是配置{ 
    "env": { 
      "ANTHROPIC_BASE_URL": " `https://api.xiaomimimo.com/anthropic` ", 
-     "ANTHROPIC_AUTH_TOKEN": "sk-ceynuqtugw5rr37jx27ckygmvwdp8r5r880og99wpg5nda4q", 
+     "ANTHROPIC_AUTH_TOKEN": "[REMOVED_API_KEY]", 
      "ANTHROPIC_MODEL": "mimo-v2.5-pro", 
      "ANTHROPIC_DEFAULT_SONNET_MODEL": "mimo-v2.5-pro", 
      "ANTHROPIC_DEFAULT_OPUS_MODEL": "mimo-v2.5-pro", 
@@ -254,7 +254,7 @@ cd astro-brook && npm run build
 
 - [generate_weekly.py](file:///d:/ai-weekly/astro-brook/scripts/generate_weekly.py) — 从 OpenAI SDK 切换为 Anthropic SDK，使用小米 MiMo API：
   - `base_url`: `https://api.xiaomimimo.com/anthropic`
-  - `api_key`: `sk-ceynuqtugw5rr37jx27ckygmvwdp8r5r880og99wpg5nda4q`
+  - `api_key`: `[REMOVED_API_KEY]`
   - `model`: `mimo-v2.5-pro`
   - 调用方式从 `client.chat.completions.create()` 改为 `client.messages.create()`（Anthropic Messages API 格式）
 - [requirements.txt](file:///d:/ai-weekly/astro-brook/scripts/requirements.txt) — `openai` → `anthropic`
