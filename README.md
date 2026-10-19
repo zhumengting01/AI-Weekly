@@ -4,6 +4,8 @@
 
 项目基于 Astro 构建，使用 Markdown 管理周刊，生成可部署的静态网站。
 
+![AI Weekly 首页预览](docs/images/ai-weekly-home.png)
+
 ## 内容与功能
 
 - **每周精选**：每期以 8—12 条资讯为编辑目标，重要事件展开解读，结合新闻密度灵活调整。
