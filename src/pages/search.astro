@@ -47,16 +47,37 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 </BaseLayout>
 
 <script>
-  let index = [];
+  type SearchEntry = {
+    slug: string;
+    title: string;
+    displayTitle?: string;
+    description?: string;
+    date?: string;
+    tags?: string[];
+    content?: string;
+  };
+
+  let index: SearchEntry[] = [];
   let indexLoaded = false;
-  let debounceTimer;
+  let debounceTimer: ReturnType<typeof setTimeout> | undefined;
+  const searchAliases: Record<string, string[]> = {
+    openai: ['gpt', 'chatgpt', 'codex'],
+    '谷歌': ['google', 'gemini'],
+    google: ['谷歌', 'gemini'],
+    anthropic: ['claude'],
+    claude: ['anthropic'],
+    '阿里': ['qwen', '通义'],
+    qwen: ['通义', '阿里'],
+    '通义': ['qwen', '阿里'],
+    gpt: ['openai', 'chatgpt'],
+  };
 
   async function loadIndex() {
     if (indexLoaded) return;
     try {
       const res = await fetch('/search-index.json');
       if (!res.ok) throw new Error('HTTP ' + res.status);
-      index = await res.json();
+      index = await res.json() as SearchEntry[];
       indexLoaded = true;
       updateStatus('');
     } catch (e) {
@@ -65,8 +86,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     }
   }
 
-  function updateStatus(msg) {
+  function updateStatus(msg: string) {
     const el = document.getElementById('search-status');
+    if (!el) return;
     if (msg) {
       el.textContent = msg;
       el.classList.remove('hidden');
@@ -75,16 +97,16 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     }
   }
 
-  function highlight(text, query) {
+  function highlight(text: string, query: string) {
     const regex = new RegExp(`(${escapeRegExp(query)})`, 'gi');
     return text.replace(regex, '<mark class="bg-yellow-200 dark:bg-yellow-900 px-0.5 rounded">$1</mark>');
   }
 
-  function escapeRegExp(string) {
+  function escapeRegExp(string: string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 
-  function getExcerpt(text, query, maxLen = 160) {
+  function getExcerpt(text: string, query: string, maxLen = 160) {
     const lower = text.toLowerCase();
     const idx = lower.indexOf(query.toLowerCase());
     if (idx === -1) return text.slice(0, maxLen) + (text.length > maxLen ? '...' : '');
@@ -97,8 +119,13 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     return excerpt;
   }
 
-  function performSearch(query) {
+  function performSearch(query: string) {
     const resultsEl = document.getElementById('search-results');
+    if (!resultsEl) return;
+    const url = new URL(window.location.href);
+    if (query.trim()) url.searchParams.set('q', query.trim());
+    else url.searchParams.delete('q');
+    window.history.replaceState(null, '', url);
 
     if (!query.trim()) {
       resultsEl.innerHTML = `
@@ -121,20 +148,22 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     }
 
     const q = query.trim().toLowerCase();
+    const terms = [...new Set([q, ...(searchAliases[q] || [])])];
     const results = index
       .map(item => {
         let score = 0;
+        const matches: string[] = [];
         const title = ((item.displayTitle || item.title) || '').toLowerCase();
         const desc = (item.description || '').toLowerCase();
         const content = (item.content || '').toLowerCase();
         const tags = (item.tags || []).join(' ').toLowerCase();
 
-        if (title.includes(q)) score += 10;
-        if (desc.includes(q)) score += 5;
-        if (tags.includes(q)) score += 4;
-        if (content.includes(q)) score += 2;
+        if (terms.some((term) => title.includes(term))) { score += 10; matches.push('标题'); }
+        if (terms.some((term) => desc.includes(term))) { score += 5; matches.push('摘要'); }
+        if (terms.some((term) => tags.includes(term))) { score += 4; matches.push('标签'); }
+        if (terms.some((term) => content.includes(term))) { score += 2; matches.push('正文'); }
 
-        return { item, score };
+        return { item, score, matches };
       })
       .filter(r => r.score > 0)
       .sort((a, b) => b.score - a.score);
@@ -142,17 +171,22 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     updateStatus(`找到 ${results.length} 个结果`);
 
     if (results.length === 0) {
+      const suggestedTags = [...new Set(index.flatMap((item) => item.tags || []))].slice(0, 6);
+      const suggestions = suggestedTags.map((tag) =>
+        `<a class="inline-block mr-2 mt-2 text-sm underline" href="/tags/${encodeURIComponent(tag)}/">${escapeHtml(tag)}</a>`
+      ).join('');
       resultsEl.innerHTML = `
         <div class="text-center py-16 text-gray-400 dark:text-gray-600">
           <p>未找到与 "<span class="font-medium text-gray-600 dark:text-gray-400">${escapeHtml(q)}</span>" 相关的结果</p>
+          ${suggestions ? `<p class="mt-5 text-sm">不妨浏览这些主题：<br>${suggestions}</p>` : ''}
         </div>`;
       return;
     }
 
-    resultsEl.innerHTML = results.map(({ item }) => {
+    resultsEl.innerHTML = results.map(({ item, matches }) => {
       const excerpt = getExcerpt((item.content || '') + ' ' + (item.description || ''), q, 140);
       const dateStr = item.date ? new Date(item.date).toLocaleDateString('zh-CN') : '';
-      const tagsHtml = (item.tags || []).map(t =>
+      const tagsHtml = (item.tags || []).map((t: string) =>
         `<span class="inline-block text-xs px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded">${escapeHtml(t)}</span>`
       ).join(' ');
 
@@ -164,6 +198,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
               ${dateStr ? `<time class="text-sm text-gray-400 dark:text-gray-600 whitespace-nowrap flex-shrink-0">${dateStr}</time>` : ''}
             </div>
             <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-3">${highlight(escapeHtml(excerpt), q)}</p>
+            <p class="text-xs text-gray-400 dark:text-gray-500 mb-3">匹配：${matches.join('、')}</p>
             ${tagsHtml ? `<div class="flex flex-wrap gap-2">${tagsHtml}</div>` : ''}
           </a>
         </article>
@@ -171,33 +206,35 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     }).join('');
   }
 
-  function escapeHtml(text) {
+  function escapeHtml(text: string) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
   }
 
-  const input = document.getElementById('search-input');
-  const form = document.getElementById('search-form');
+  const input = document.getElementById('search-input') as HTMLInputElement | null;
+  const form = document.getElementById('search-form') as HTMLFormElement | null;
 
-  input.addEventListener('input', (e) => {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => performSearch(e.target.value), 200);
-  });
+  if (input && form) {
+    input.addEventListener('input', () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => performSearch(input.value), 200);
+    });
 
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    clearTimeout(debounceTimer);
-    performSearch(input.value);
-  });
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      clearTimeout(debounceTimer);
+      performSearch(input.value);
+    });
 
-  // 初始化：先加载索引，再处理 URL 参数
-  loadIndex().then(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const q = urlParams.get('q');
-    if (q) {
-      input.value = q;
-      performSearch(q);
-    }
-  });
+    // 初始化：先加载索引，再处理 URL 参数
+    loadIndex().then(() => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const q = urlParams.get('q');
+      if (q) {
+        input.value = q;
+        performSearch(q);
+      }
+    });
+  }
 </script>

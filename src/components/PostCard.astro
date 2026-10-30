@@ -1,6 +1,7 @@
 ---
 import { formatDate } from '../utils/date';
 import { optimizeImagePath } from '../utils/optimizeImagePath';
+import { getDiscoveryTags } from '../utils/tags';
 
 interface Props {
   post: {
@@ -24,6 +25,7 @@ const { title, date, excerpt, image, tags } = post.frontmatter;
 
 // Ensure image path is optimized
 const optimizedImagePath = image ? optimizeImagePath(image) : null;
+const discoveryTags = getDiscoveryTags(tags);
 ---
 
 <article class="border-t border-gray-200 dark:border-gray-800 py-4 xl:py-8" transition:name={`post-${post.id}`}>
@@ -42,9 +44,9 @@ const optimizedImagePath = image ? optimizeImagePath(image) : null;
       </time>
     </div>
     
-    {showTags && tags && tags.length > 0 && (
+    {showTags && discoveryTags.length > 0 && (
       <div class="flex flex-wrap gap-2 mb-4" aria-label="标签">
-        {tags.map((tag) => (
+        {discoveryTags.map((tag) => (
           <a
             href={`/tags/${tag}`}
             class="inline-flex items-center rounded-md bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800 hover:bg-gray-200 focus:outline-none"

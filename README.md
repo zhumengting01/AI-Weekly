@@ -69,8 +69,17 @@ npm run dev
 ---
 title: "本期主题标题"
 date: 2026-10-26
+periodStart: 2026-10-19
+periodEnd: 2026-10-25
 excerpt: "一句话概括本期关注的模型、产品、开源或科研动态。"
 tags: [AI, 周刊]
+featured: false
+takeaways:
+  - "本期最重要的变化之一。"
+  - "本期最重要的变化之二。"
+  - "本期最重要的变化之三。"
+readerFor: "关注该主题的读者"
+sourcesCount: 8
 ---
 
 本期回顾 **2026 年 10 月 19 日—10 月 25 日**的 AI 动态。
@@ -92,11 +101,18 @@ tags: [AI, 周刊]
 
 上方日期、主题和链接仅用于展示格式，发布前替换为对应周次的真实信息。图片可放入 `public/images/`，在正文中用 `/images/文件名` 引用。
 
-网站按文章的 `date` 排序并生成年度周标题；历史文件编号不完全对应时间顺序，维护时以正文新闻范围和 `date` 为准。
+网站按文章的 `date` 排序，并同时展示年度周标题和编辑标题；历史文件编号不完全对应时间顺序，维护时以正文新闻范围和 `date` 为准。`periodStart`、`periodEnd`、`updatedDate`、`editorNote` 与 `corrections` 均为可选字段，分别用于记录新闻范围、后续更新和编辑说明。`takeaways`、`readerFor` 与 `sourcesCount` 会用于首页导读和周刊详情的快速扫读。
 
 ### 4. 预览与检查
 
-执行 `npm run dev`，检查文章日期、来源、目录、排版与链接，再执行 `npm run build` 检查生产构建。
+执行 `npm run dev`，检查文章日期、来源、目录、排版与链接，再执行以下发布检查：
+
+```bash
+pnpm check        # Astro 与 TypeScript 检查
+pnpm check:content # 最新一期内容门槛检查
+pnpm check:links  # 检查周刊中的外部来源链接
+pnpm build        # 生成生产站点
+```
 
 旧的 API 自动生成与定时任务安装入口已停用，`npm run generate`、`npm run generate:dry` 和 `npm run setup-cron` 不属于当前更新流程。旧脚本保留在 `scripts/` 中供参考。
 

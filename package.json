@@ -9,9 +9,10 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "generate": "python scripts/generate_weekly.py",
-    "generate:dry": "python scripts/generate_weekly.py --dry-run",
-    "setup-cron": "powershell -ExecutionPolicy Bypass -File scripts/setup-cron.ps1"
+    "check": "astro check",
+    "check:content": "node scripts/validate-weekly-content.mjs",
+    "check:links": "node scripts/check-links.mjs",
+    "test": "node --test tests/reader-paths.test.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^5.0.3",
@@ -24,6 +25,8 @@
     "zwitch": "^2.0.0"
   },
   "devDependencies": {
+    "@emnapi/runtime": "^1.11.0",
+    "@astrojs/check": "^0.9.4",
     "@tailwindcss/postcss": "^4.3.0",
     "@tailwindcss/typography": "^0.5.10",
     "@tailwindcss/vite": "^4.3.0",

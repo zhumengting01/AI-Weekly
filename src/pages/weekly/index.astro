@@ -2,7 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostList from '../../components/PostList.astro';
 import { getCollection } from 'astro:content';
-import { getWeekTitle } from '../../utils/date';
+import { formatWeeklyTitle } from '../../utils/weekly';
 
 const allWeekly = await getCollection('weekly');
 const sortedWeekly = allWeekly.sort((a, b) => {
@@ -12,7 +12,7 @@ const sortedWeekly = allWeekly.sort((a, b) => {
 const weekly = sortedWeekly.map(post => ({
   ...post,
   url: `/weekly/${post.id}`,
-  frontmatter: { ...post.data, title: getWeekTitle(post.data.date) }
+  frontmatter: { ...post.data, title: formatWeeklyTitle(post.data.date, post.data.title) }
 }));
 ---
 

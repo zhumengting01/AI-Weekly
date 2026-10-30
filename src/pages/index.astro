@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PostList from '../components/PostList.astro';
 import { getCollection } from 'astro:content';
-import { getWeekTitle } from '../utils/date';
+import { formatWeeklyTitle } from '../utils/weekly';
 
 // 获取最新周刊
 const allWeekly = await getCollection('weekly');
@@ -12,19 +12,10 @@ const sortedWeekly = allWeekly.sort((a, b) => {
 const latestWeekly = sortedWeekly.slice(0, 3).map(post => ({
   ...post,
   url: `/weekly/${post.id}`,
-  frontmatter: { ...post.data, title: getWeekTitle(post.data.date) }
+  frontmatter: { ...post.data, title: formatWeeklyTitle(post.data.date, post.data.title) }
 }));
+const latestIssue = latestWeekly[0];
 
-// 获取博客文章
-const allPosts = await getCollection('posts');
-const sortedPosts = allPosts.sort((a, b) => {
-  return new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf();
-});
-const posts = sortedPosts.slice(0, 5).map(post => ({
-  ...post,
-  url: `/posts/${post.id}`,
-  frontmatter: post.data
-}));
 ---
 
 <BaseLayout title="欢迎">
@@ -39,6 +30,23 @@ const posts = sortedPosts.slice(0, 5).map(post => ({
       </a>
     </section>
 
+    {latestIssue?.frontmatter.takeaways && (
+      <section class="mb-16 border-y border-slate-200 dark:border-slate-800 py-8" aria-labelledby="brief-title">
+        <div class="grid gap-8 md:grid-cols-[11rem_1fr]">
+          <div>
+            <h2 id="brief-title" class="mt-0 mb-2 text-2xl">本期导读</h2>
+            <p class="mb-0 text-sm text-slate-500 dark:text-slate-400">{latestIssue.frontmatter.readerFor || '过去一周的关键变化'}</p>
+          </div>
+          <div>
+            <ol class="m-0 space-y-3 pl-5">
+              {latestIssue.frontmatter.takeaways.map((takeaway: string) => <li class="pl-1 leading-relaxed">{takeaway}</li>)}
+            </ol>
+            <a href={latestIssue.url} class="mt-5 inline-block text-sm font-semibold text-blue-700 dark:text-blue-300">阅读本期完整分析</a>
+          </div>
+        </div>
+      </section>
+    )}
+
     {latestWeekly.length > 0 && (
       <section class="mx-auto mb-16" transition:animate="fade">
         <PostList posts={latestWeekly} showExcerpt={true} showTags={true} title="最新周刊" />
@@ -51,16 +59,15 @@ const posts = sortedPosts.slice(0, 5).map(post => ({
       </section>
     )}
 
-    {posts.length > 0 && (
-      <section class="mx-auto" transition:animate="fade">
-        <PostList posts={posts} showImages={false} showExcerpt={false} showSeparators={true} showTags={false}/>
-
-        <div class="text-center mt-24">
-          <a href="/journal" class="text-lg font-medium text-black dark:text-white py-2 px-4 rounded-md inline-block focus:outline-none hover:underline">
-            查看所有文章 <span aria-hidden="true">→</span>
-          </a>
+    <section class="border-t border-slate-200 py-12 dark:border-slate-800" aria-labelledby="topics-title">
+      <div class="flex items-baseline justify-between gap-6">
+        <div>
+          <h2 id="topics-title" class="mt-0 mb-2 text-2xl">持续追踪</h2>
+          <p class="mb-0 text-slate-500 dark:text-slate-400">围绕重要主题回看每周变化。</p>
         </div>
-      </section>
-    )}
+        <a href="/topics" class="shrink-0 text-sm font-semibold">浏览专题</a>
+      </div>
+    </section>
+
   </div>
 </BaseLayout>

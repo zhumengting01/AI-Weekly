@@ -1,7 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import PostLayout from '../../layouts/PostLayout.astro';
-import { getWeekTitle } from '../../utils/date';
+import { formatWeeklyTitle } from '../../utils/weekly';
 
 export async function getStaticPaths() {
   const allWeekly = await getCollection('weekly');
@@ -11,18 +11,18 @@ export async function getStaticPaths() {
   );
 
   return sortedWeekly.map((entry, index) => {
-    const weekTitle = getWeekTitle(entry.data.date);
+    const weekTitle = formatWeeklyTitle(entry.data.date, entry.data.title);
     const prevPost = sortedWeekly[index - 1]
       ? {
           url: `/weekly/${sortedWeekly[index - 1].id}`,
-          title: getWeekTitle(sortedWeekly[index - 1].data.date)
+          title: formatWeeklyTitle(sortedWeekly[index - 1].data.date, sortedWeekly[index - 1].data.title)
         }
       : null;
 
     const nextPost = sortedWeekly[index + 1]
       ? {
           url: `/weekly/${sortedWeekly[index + 1].id}`,
-          title: getWeekTitle(sortedWeekly[index + 1].data.date)
+          title: formatWeeklyTitle(sortedWeekly[index + 1].data.date, sortedWeekly[index + 1].data.title)
         }
       : null;
 

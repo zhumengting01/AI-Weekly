@@ -6,7 +6,9 @@ import tailwindcss from '@tailwindcss/vite';
 // https://astro.build/config
 export default defineConfig({
   output: 'static', // Explicitly specify static output (which is also the default)
-  site: 'https://brook2-astro-blog.vercel.app',
+  // Keep this value aligned with the production deployment URL. Astro uses it
+  // for canonical URLs and the generated sitemap.
+  site: 'https://ai-weeklys.vercel.app',
   // Enable built-in image optimization with specific settings
   image: {
     service: {

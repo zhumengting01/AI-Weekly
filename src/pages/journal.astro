@@ -1,15 +1,18 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
-import { getWeekTitle } from '../utils/date';
+import { formatWeeklyTitle } from '../utils/weekly';
+import { getDiscoveryTags } from '../utils/tags';
 
 const allWeekly = await getCollection('weekly');
 const sortedWeekly = allWeekly.sort((a, b) => {
   return new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf();
 });
+const years = [...new Set(sortedWeekly.map((post) => new Date(post.data.date).getFullYear()))];
+const archiveTags = [...new Set(sortedWeekly.flatMap((post) => getDiscoveryTags(post.data.tags)))].sort();
 
 // Group by year-month
-const grouped = new Map();
+const grouped = new Map<string, typeof sortedWeekly>();
 sortedWeekly.forEach(post => {
   const date = new Date(post.data.date);
   const year = date.getFullYear();
@@ -18,7 +21,7 @@ sortedWeekly.forEach(post => {
   if (!grouped.has(key)) {
     grouped.set(key, []);
   }
-  grouped.get(key).push(post);
+  grouped.get(key)?.push(post);
 });
 ---
 
@@ -27,13 +30,30 @@ sortedWeekly.forEach(post => {
     <header class="mb-12 text-center" transition:animate="fade">
       <h1 class="text-5xl mb-4">归档</h1>
       <p class="text-xl text-muted-foreground">
-        按时间归置的所有周刊
+        按时间、主题浏览所有周刊
       </p>
     </header>
 
-    <div class="space-y-10" transition:animate="fade">
+    <div class="mb-10 grid gap-4 sm:grid-cols-2" aria-label="归档筛选">
+      <label class="mb-0 text-sm font-medium text-gray-700 dark:text-gray-300" for="archive-year">
+        年份
+        <select id="archive-year" class="mt-2 mb-0">
+          <option value="">全部年份</option>
+          {years.map((year) => <option value={year}>{year} 年</option>)}
+        </select>
+      </label>
+      <label class="mb-0 text-sm font-medium text-gray-700 dark:text-gray-300" for="archive-tag">
+        主题
+        <select id="archive-tag" class="mt-2 mb-0">
+          <option value="">全部主题</option>
+          {archiveTags.map((tag) => <option value={tag}>{tag}</option>)}
+        </select>
+      </label>
+    </div>
+
+    <div id="archive-list" class="space-y-10" transition:animate="fade">
       {Array.from(grouped.entries()).map(([period, posts]) => (
-        <section>
+        <section data-year={period.slice(0, 4)}>
           <h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-800 pb-2">
             {period}
           </h2>
@@ -42,7 +62,7 @@ sortedWeekly.forEach(post => {
               const date = new Date(post.data.date);
               const day = date.getDate();
               return (
-                <li class="flex items-start gap-4 group">
+                <li class="flex items-start gap-4 group" data-tags={getDiscoveryTags(post.data.tags).join('|')}>
                   <span class="text-sm text-gray-400 dark:text-gray-600 mt-1 w-8 text-right shrink-0">
                     {day}日
                   </span>
@@ -50,7 +70,7 @@ sortedWeekly.forEach(post => {
                     href={`/weekly/${post.id}`}
                     class="text-lg text-gray-800 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400 transition-colors group-hover:underline"
                   >
-                    {getWeekTitle(post.data.date)}
+                    {formatWeeklyTitle(post.data.date, post.data.title)}
                   </a>
                 </li>
               );
@@ -61,3 +81,28 @@ sortedWeekly.forEach(post => {
     </div>
   </div>
 </BaseLayout>
+
+<script>
+  const yearSelect = document.getElementById('archive-year') as HTMLSelectElement | null;
+  const tagSelect = document.getElementById('archive-tag') as HTMLSelectElement | null;
+  const archiveSections = [...document.querySelectorAll<HTMLElement>('#archive-list > section')];
+
+  function filterArchive() {
+    const year = yearSelect?.value ?? '';
+    const tag = tagSelect?.value ?? '';
+    archiveSections.forEach((section) => {
+      const yearMatches = !year || section.dataset.year === year;
+      const entries = [...section.querySelectorAll<HTMLElement>('li[data-tags]')];
+      let visibleEntries = 0;
+      entries.forEach((entry) => {
+        const tagMatches = !tag || (entry.dataset.tags ?? '').split('|').includes(tag);
+        entry.hidden = !tagMatches;
+        if (tagMatches) visibleEntries += 1;
+      });
+      section.hidden = !yearMatches || visibleEntries === 0;
+    });
+  }
+
+  yearSelect?.addEventListener('change', filterArchive);
+  tagSelect?.addEventListener('change', filterArchive);
+</script>

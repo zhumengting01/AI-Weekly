@@ -4,9 +4,11 @@ import PostNavigation from '../components/PostNavigation.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 import { formatDate } from '../utils/date';
 import { optimizeImagePath } from '../utils/optimizeImagePath';
+import { getDiscoveryTags } from '../utils/tags';
 
 const { frontmatter, headings, prevPost, nextPost } = Astro.props;
-const { title, date, tags, image, excerpt } = frontmatter;
+const { title, date, tags = [] as string[], image, excerpt, updatedDate, periodStart, periodEnd, takeaways, readerFor, sourcesCount, editorNote, corrections } = frontmatter;
+const discoveryTags = getDiscoveryTags(tags);
 const slug = Astro.url.pathname.split('/').filter(Boolean).pop();
 
 // Ensure image path is optimized
@@ -29,19 +31,21 @@ const publishDate = new Date(date);
   image={optimizedImagePath || image}
   type="article"
   publishedDate={publishDate}
+  modifiedDate={updatedDate}
 >
   <div class="max-w-[72rem] mx-auto px-4 flex gap-12">
   <article id="main-content" class="flex-1 min-w-0">
     <header class="max-w-4xl mb-10">
       <div class="text-gray-500 text-sm mb-2">
         <time datetime={publishDate.toISOString()}>{formatDate(date)}</time> • <span aria-label={`${readingTime} 分钟阅读`}>{readingTime} 分钟阅读</span>
+        {updatedDate && <> • <span>更新于 {formatDate(updatedDate)}</span></>}
       </div>
       <h1 class="text-5xl mb-6" transition:name={`title-${slug}`}>{title}</h1>
       {excerpt && <p class="text-xl text-gray-500">{excerpt}</p>}
 
-      {tags && tags.length > 0 && (
+      {discoveryTags.length > 0 && (
         <div class="mt-4 mb-4 flex flex-wrap gap-2" aria-label="标签">
-          {tags.map((tag) => (
+          {discoveryTags.map((tag: string) => (
             <a
               href={`/tags/${tag}`}
               class="tag"
@@ -53,6 +57,25 @@ const publishDate = new Date(date);
         </div>
       )}
     </header>
+
+    {(periodStart || periodEnd || sourcesCount || readerFor) && (
+      <aside class="issue-facts" aria-label="本期信息">
+        {periodStart && periodEnd && <p><span>覆盖日期</span>{formatDate(periodStart)}—{formatDate(periodEnd)}</p>}
+        {sourcesCount && <p><span>来源</span>{sourcesCount} 条精选来源</p>}
+        {readerFor && <p><span>适合阅读</span>{readerFor}</p>}
+      </aside>
+    )}
+
+    {takeaways && takeaways.length > 0 && (
+      <section class="weekly-brief" aria-labelledby="weekly-brief-title">
+        <h2 id="weekly-brief-title">先看结论</h2>
+        <ol>
+          {takeaways.map((item: string) => <li>{item}</li>)}
+        </ol>
+      </section>
+    )}
+
+    <TableOfContents headings={headings} mobileOnly={true} />
 
     {optimizedImagePath && (
       <div class="max-w-4xl mx-auto mt-2 mb-10 feature-image" transition:name={`image-${slug}`}>
@@ -72,6 +95,14 @@ const publishDate = new Date(date);
       <slot />
     </div>
 
+    {(editorNote || (corrections && corrections.length > 0)) && (
+      <aside class="editorial-record" aria-label="编辑记录">
+        <h2>编辑记录</h2>
+        {editorNote && <p>{editorNote}</p>}
+        {corrections && corrections.length > 0 && <ul>{corrections.map((item: string) => <li>{item}</li>)}</ul>}
+      </aside>
+    )}
+
     <div class="max-w-4xl">
       <PostNavigation prevPost={prevPost} nextPost={nextPost} />
     </div>
@@ -85,6 +116,8 @@ const publishDate = new Date(date);
           <a href="/" class="nav-link-footer px-3 py-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">首页</a>
           <span class="text-gray-300 dark:text-gray-700">·</span>
           <a href="/weekly" class="nav-link-footer px-3 py-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">周刊</a>
+          <span class="text-gray-300 dark:text-gray-700">·</span>
+          <a href="/topics" class="nav-link-footer px-3 py-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">专题</a>
           <span class="text-gray-300 dark:text-gray-700">·</span>
           <a href="/journal" class="nav-link-footer px-3 py-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">日志</a>
           <span class="text-gray-300 dark:text-gray-700">·</span>
@@ -132,6 +165,39 @@ const publishDate = new Date(date);
     margin-top: 2rem;
     margin-bottom: 0.75rem;
   }
+
+  .issue-facts {
+    display: grid;
+    gap: 0.55rem;
+    margin: 0 0 2rem;
+    padding: 1rem 1.25rem;
+    border-left: 3px solid #1d4ed8;
+    background: #eff6ff;
+    color: #334155;
+  }
+
+  .issue-facts p { margin: 0; }
+  .issue-facts span { display: inline-block; min-width: 5.5rem; color: #1e3a8a; font-weight: 700; }
+
+  .weekly-brief {
+    margin: 0 0 2.5rem;
+    padding: 1.5rem 1.5rem 1rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.75rem;
+    background: #f8fafc;
+  }
+  .weekly-brief h2 { margin: 0 0 0.9rem; font-size: 1.35rem; }
+  .weekly-brief ol { margin: 0; padding-left: 1.5rem; }
+  .weekly-brief li { padding-left: 0.25rem; margin-bottom: 0.65rem; }
+
+  .editorial-record { margin-top: 3rem; padding: 1.25rem; border-top: 1px solid #d1d5db; color: #4b5563; }
+  .editorial-record h2 { margin: 0 0 0.5rem; font-size: 1.125rem; }
+  .editorial-record p, .editorial-record ul { margin-bottom: 0; }
+
+  :global(.dark) .issue-facts { background: #172554; color: #dbeafe; border-color: #93c5fd; }
+  :global(.dark) .issue-facts span { color: #bfdbfe; }
+  :global(.dark) .weekly-brief { background: #111827; border-color: #374151; }
+  :global(.dark) .editorial-record { border-color: #374151; color: #9ca3af; }
 </style>
 
   <!-- 回到顶端按钮 -->
@@ -150,6 +216,8 @@ const publishDate = new Date(date);
     function initBackToTop() {
       const btn = document.getElementById('back-to-top');
       if (!btn) return;
+      if (btn.dataset.backToTopBound === 'true') return;
+      btn.dataset.backToTopBound = 'true';
 
       const toggleVisibility = () => {
         if (window.scrollY > 400) {

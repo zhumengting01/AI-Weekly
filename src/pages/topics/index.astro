@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { topics } from '../../utils/topics';
+---
+
+<BaseLayout title="专题">
+  <div class="max-w-4xl mx-auto">
+    <header class="mb-12 max-w-2xl">
+      <h1 class="text-5xl mb-4">专题脉络</h1>
+      <p class="text-xl text-muted-foreground">从每周动态中持续追踪值得长期关注的主题。</p>
+    </header>
+    <div class="grid gap-px border border-slate-200 bg-slate-200 sm:grid-cols-2 dark:border-slate-800 dark:bg-slate-800">
+      {Object.entries(topics).map(([slug, topic]) => (
+        <a href={`/topics/${slug}`} class="block bg-white p-7 no-underline transition-colors hover:bg-blue-50 dark:bg-black dark:hover:bg-slate-950">
+          <h2 class="mt-0 mb-3 text-2xl">{topic.title}</h2>
+          <p class="mb-0 text-slate-600 dark:text-slate-400">{topic.description}</p>
+        </a>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

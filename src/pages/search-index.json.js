@@ -1,5 +1,6 @@
 import { getCollection } from 'astro:content';
-import { getWeekTitle } from '../utils/date.js';
+import { formatWeeklyTitle } from '../utils/weekly.js';
+import { getDiscoveryTags } from '../utils/tags.js';
 
 /**
  * 将 Markdown 内容转换为纯文本摘要
@@ -40,10 +41,10 @@ export async function GET() {
   const index = weekly.map((entry) => ({
     slug: entry.slug,
     title: entry.data.title,
-    displayTitle: getWeekTitle(entry.data.date),
-    description: entry.data.description || entry.data.excerpt || '',
+    displayTitle: formatWeeklyTitle(entry.data.date, entry.data.title),
+    description: entry.data.excerpt || '',
     date: entry.data.date,
-    tags: entry.data.tags,
+    tags: getDiscoveryTags(entry.data.tags),
     content: markdownToPlainText(entry.body || '').substring(0, 3000),
   }));
 

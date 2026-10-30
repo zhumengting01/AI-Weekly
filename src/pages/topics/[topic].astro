@@ -1,0 +1,33 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostList from '../../components/PostList.astro';
+import { matchesTopic, topics, type TopicSlug } from '../../utils/topics';
+import { formatWeeklyTitle } from '../../utils/weekly';
+
+export async function getStaticPaths() {
+  const weekly = await getCollection('weekly');
+  return Object.keys(topics).map((topic) => ({
+    params: { topic },
+    props: { entries: weekly.filter((entry) => matchesTopic(entry, topic as TopicSlug)) },
+  }));
+}
+
+const topic = Astro.params.topic as TopicSlug;
+const definition = topics[topic];
+const { entries } = Astro.props;
+const posts = entries
+  .sort((a, b) => new Date(b.data.date).valueOf() - new Date(a.data.date).valueOf())
+  .map((entry) => ({ ...entry, url: `/weekly/${entry.id}`, frontmatter: { ...entry.data, title: formatWeeklyTitle(entry.data.date, entry.data.title) } }));
+---
+
+<BaseLayout title={definition.title} description={definition.description}>
+  <div class="max-w-3xl mx-auto">
+    <header class="mb-12 border-b border-slate-200 pb-8 dark:border-slate-800">
+      <a href="/topics" class="text-sm">所有专题</a>
+      <h1 class="mb-4">{definition.title}</h1>
+      <p class="mb-0 text-xl text-muted-foreground">{definition.description}</p>
+    </header>
+    <PostList posts={posts} title={`共 ${posts.length} 期相关周刊`} />
+  </div>
+</BaseLayout>

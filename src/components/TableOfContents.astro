@@ -7,36 +7,49 @@ interface Heading {
 
 interface Props {
   headings: Heading[];
+  mobileOnly?: boolean;
 }
 
-const { headings = [] } = Astro.props;
+const { headings = [], mobileOnly = false } = Astro.props;
 
 // Show h1, h2 and h3
 const tocHeadings = headings.filter(h => h.depth >= 1 && h.depth <= 3);
 ---
 
 {tocHeadings.length > 0 && (
-  <nav class="toc-container" aria-label="目录导航">
-    <div id="toc-list" class="toc-list">
-      <div class="toc-title">目录</div>
-      <div class="toc-progress">
-        <div class="toc-progress-bar" id="toc-progress-bar"></div>
-      </div>
+  <>
+    {mobileOnly && <details class="mobile-toc">
+      <summary>本页目录</summary>
       <ul>
         {tocHeadings.map((heading) => (
           <li class={`toc-item toc-depth-${heading.depth}`}>
-            <a
-              href={`#${heading.slug}`}
-              class="toc-link"
-              data-heading-slug={heading.slug}
-            >
-              {heading.text}
-            </a>
+            <a href={`#${heading.slug}`}>{heading.text}</a>
           </li>
         ))}
       </ul>
-    </div>
-  </nav>
+    </details>}
+    {!mobileOnly && <nav class="toc-container" aria-label="目录导航">
+      <div id="toc-list" class="toc-list">
+        <div class="toc-title">目录</div>
+        <div class="toc-progress">
+          <div class="toc-progress-bar" id="toc-progress-bar"></div>
+        </div>
+        <ul>
+          {tocHeadings.map((heading) => (
+            <li class={`toc-item toc-depth-${heading.depth}`}>
+              <a
+                href={`#${heading.slug}`}
+                class="toc-link"
+                data-heading-slug={heading.slug}
+              >
+                {heading.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </nav>}
+  </>
 )}
 
 <style>
@@ -51,9 +64,35 @@ const tocHeadings = headings.filter(h => h.depth >= 1 && h.depth <= 3);
     overflow-y: auto;
   }
 
+  .mobile-toc {
+    display: block;
+    margin: 0 0 1.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+  }
+
+  .mobile-toc summary {
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .mobile-toc ul {
+    margin: 0;
+    padding: 0 1rem 1rem 2rem;
+  }
+
+  :global(.dark) .mobile-toc {
+    border-color: #374151;
+  }
+
   @media (min-width: 1280px) {
     .toc-container {
       display: block;
+    }
+
+    .mobile-toc {
+      display: none;
     }
   }
 
@@ -258,6 +297,7 @@ const tocHeadings = headings.filter(h => h.depth >= 1 && h.depth <= 3);
     }
 
     function scrollTocToActive(activeLink: HTMLAnchorElement) {
+      if (!tocList) return;
       const listRect = tocList.getBoundingClientRect();
       const linkRect = activeLink.getBoundingClientRect();
 

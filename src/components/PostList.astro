@@ -5,7 +5,6 @@ interface Props {
   posts: any[];
   showImages?: boolean;
   showExcerpt?: boolean;
-  showSeparators?: boolean;
   showTags?: boolean;
   title?: string;
 }
@@ -14,7 +13,6 @@ const {
   posts, 
   showImages = true, 
   showExcerpt = true, 
-  showSeparators = false, 
   showTags = true,
   title 
 } = Astro.props;
@@ -29,7 +27,7 @@ const {
     {posts.length === 0 ? (
       <p class="py-8 text-gray-500 text-center">未找到文章。</p>
     ) : (
-      posts.map((post, index) => (
+      posts.map((post) => (
         <PostCard 
           post={post} 
           showImage={showImages} 

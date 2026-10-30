@@ -1,6 +1,5 @@
 ---
 import '../styles/global.css';
-import { ClientRouter } from 'astro:transitions';
 import DarkModeToggle from '../components/ui/DarkModeToggle.astro';
 import Analytics from '@vercel/analytics/astro';
 
@@ -16,7 +15,7 @@ interface Props {
 
 const { 
   title, 
-  description = "一个专注于简洁排版和无干扰阅读体验的极简博客模板。", 
+  description = "每周精选人工智能领域值得关注的模型、产品、开源与科研动态。",
   image = "/og-image.png",
   type = "website",
   publishedDate,
@@ -72,9 +71,6 @@ const jsonLD = type === 'article' && jsonLDArticle ? jsonLDArticle : jsonLDWebsi
     <title>{title} | AI Weekly</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
-
-    <!-- Aktivieren der View Transitions -->
-    <ClientRouter />
 
     <!-- Dark mode initialization script according to official Tailwind documentation -->
     <script is:inline>
@@ -134,6 +130,7 @@ const jsonLD = type === 'article' && jsonLDArticle ? jsonLDArticle : jsonLDWebsi
             <nav class="flex items-center gap-6">
               <a href="/" class={currentPath === '/' ? 'nav-link font-bold underline underline-offset-4 decoration-2' : 'nav-link'}>首页</a>
               <a href="/weekly" class={currentPath === '/weekly' || currentPath === '/weekly/' || currentPath.startsWith('/weekly/') ? 'nav-link font-bold underline underline-offset-4 decoration-2' : 'nav-link'}>周刊</a>
+              <a href="/topics" class={currentPath === '/topics' || currentPath === '/topics/' || currentPath.startsWith('/topics/') ? 'nav-link font-bold underline underline-offset-4 decoration-2' : 'nav-link'}>专题</a>
               <a href="/journal" class={currentPath === '/journal' || currentPath === '/journal/' || currentPath.startsWith('/journal/') ? 'nav-link font-bold underline underline-offset-4 decoration-2' : 'nav-link'}>归档</a>
               <a href="/search" class={currentPath === '/search' || currentPath === '/search/' ? 'nav-link font-bold underline underline-offset-4 decoration-2' : 'nav-link'}>搜索</a>
               <a href="/about" class={currentPath === '/about' || currentPath === '/about/' ? 'nav-link font-bold underline underline-offset-4 decoration-2' : 'nav-link'}>关于</a>
@@ -165,6 +162,7 @@ const jsonLD = type === 'article' && jsonLDArticle ? jsonLDArticle : jsonLDWebsi
         <nav id="mobile-menu" class="hidden md:hidden mt-6 pt-4 border-t border-gray-200 dark:border-gray-800 space-y-1">
           <a href="/" class={currentPath === '/' ? 'block px-3 py-2 text-sm font-bold underline underline-offset-4 text-gray-900 dark:text-gray-100' : 'block px-3 py-2 text-sm text-gray-900 dark:text-gray-300 hover:underline'}>首页</a>
           <a href="/weekly" class={currentPath === '/weekly' || currentPath === '/weekly/' || currentPath.startsWith('/weekly/') ? 'block px-3 py-2 text-sm font-bold underline underline-offset-4 text-gray-900 dark:text-gray-100' : 'block px-3 py-2 text-sm text-gray-900 dark:text-gray-300 hover:underline'}>周刊</a>
+          <a href="/topics" class={currentPath === '/topics' || currentPath === '/topics/' || currentPath.startsWith('/topics/') ? 'block px-3 py-2 text-sm font-bold underline underline-offset-4 text-gray-900 dark:text-gray-100' : 'block px-3 py-2 text-sm text-gray-900 dark:text-gray-300 hover:underline'}>专题</a>
           <a href="/journal" class={currentPath === '/journal' || currentPath === '/journal/' || currentPath.startsWith('/journal/') ? 'block px-3 py-2 text-sm font-bold underline underline-offset-4 text-gray-900 dark:text-gray-100' : 'block px-3 py-2 text-sm text-gray-900 dark:text-gray-300 hover:underline'}>归档</a>
           <a href="/search" class={currentPath === '/search' || currentPath === '/search/' ? 'block px-3 py-2 text-sm font-bold underline underline-offset-4 text-gray-900 dark:text-gray-100' : 'block px-3 py-2 text-sm text-gray-900 dark:text-gray-300 hover:underline'}>搜索</a>
           <a href="/about" class={currentPath === '/about' || currentPath === '/about/' ? 'block px-3 py-2 text-sm font-bold underline underline-offset-4 text-gray-900 dark:text-gray-100' : 'block px-3 py-2 text-sm text-gray-900 dark:text-gray-300 hover:underline'}>关于</a>
@@ -185,6 +183,8 @@ const jsonLD = type === 'article' && jsonLDArticle ? jsonLDArticle : jsonLDWebsi
             <span class="text-gray-300 dark:text-gray-700">·</span>
             <a href="/weekly" class="nav-link-footer px-3 py-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">周刊</a>
             <span class="text-gray-300 dark:text-gray-700">·</span>
+            <a href="/topics" class="nav-link-footer px-3 py-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">专题</a>
+            <span class="text-gray-300 dark:text-gray-700">·</span>
             <a href="/journal" class="nav-link-footer px-3 py-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">归档</a>
             <span class="text-gray-300 dark:text-gray-700">·</span>
             <a href="/search" class="nav-link-footer px-3 py-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">搜索</a>
@@ -196,6 +196,8 @@ const jsonLD = type === 'article' && jsonLDArticle ? jsonLDArticle : jsonLDWebsi
     </div>
 
     <script>
+      const themeToggleHandlers = new WeakMap<HTMLButtonElement, EventListener>();
+
       // Mobile menu toggle functionality
       function initMobileMenu() {
         const menuButton = document.getElementById('mobile-menu-button');
@@ -204,6 +206,8 @@ const jsonLD = type === 'article' && jsonLDArticle ? jsonLDArticle : jsonLDWebsi
         const closeIcon = document.getElementById('close-icon');
 
         if (!menuButton || !mobileMenu || !menuIcon || !closeIcon) return;
+        if (menuButton.dataset.menuBound === 'true') return;
+        menuButton.dataset.menuBound = 'true';
 
         menuButton.addEventListener('click', () => {
           const isExpanded = menuButton.getAttribute('aria-expanded') === 'true';
@@ -233,11 +237,11 @@ const jsonLD = type === 'article' && jsonLDArticle ? jsonLDArticle : jsonLDWebsi
 
       // Dark mode toggle functionality
       function initThemeToggle() {
-        const buttons = document.querySelectorAll('.theme-toggle');
+        const buttons = document.querySelectorAll<HTMLButtonElement>('.theme-toggle');
 
         buttons.forEach(button => {
           // Remove existing listener if any
-          const oldHandler = button.themeToggleHandler;
+          const oldHandler = themeToggleHandlers.get(button);
           if (oldHandler) {
             button.removeEventListener('click', oldHandler);
           }
@@ -253,14 +257,14 @@ const jsonLD = type === 'article' && jsonLDArticle ? jsonLDArticle : jsonLDWebsi
             }
           };
 
-          button.themeToggleHandler = handler;
+          themeToggleHandlers.set(button, handler);
           button.addEventListener('click', handler);
         });
       }
 
       // Make external links open in new tab
       function initExternalLinks() {
-        document.querySelectorAll('a[href^="http"]').forEach(link => {
+        document.querySelectorAll<HTMLAnchorElement>('a[href^="http"]').forEach(link => {
           if (link.hostname !== location.hostname) {
             link.setAttribute('target', '_blank');
             link.setAttribute('rel', 'noopener noreferrer');
@@ -270,7 +274,9 @@ const jsonLD = type === 'article' && jsonLDArticle ? jsonLDArticle : jsonLDWebsi
 
       // Remove focus from navigation links after click
       function initNavBlur() {
-        document.querySelectorAll('header a, nav a, footer a').forEach(link => {
+        document.querySelectorAll<HTMLAnchorElement>('header a, nav a, footer a').forEach(link => {
+          if (link.dataset.navBlurBound === 'true') return;
+          link.dataset.navBlurBound = 'true';
           link.addEventListener('click', () => {
             link.blur();
           });
@@ -291,7 +297,7 @@ const jsonLD = type === 'article' && jsonLDArticle ? jsonLDArticle : jsonLDWebsi
         initNavBlur();
         // Blur any focused element after transition
         const focused = document.activeElement;
-        if (focused) focused.blur();
+        if (focused instanceof HTMLElement) focused.blur();
       });
     </script>
     <Analytics />
