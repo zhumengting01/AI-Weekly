@@ -11,7 +11,7 @@ import { topics } from '../../utils/topics';
     </header>
     <div class="grid gap-px border border-slate-200 bg-slate-200 sm:grid-cols-2 dark:border-slate-800 dark:bg-slate-800">
       {Object.entries(topics).map(([slug, topic]) => (
-        <a href={`/topics/${slug}`} class="block bg-white p-7 no-underline transition-colors hover:bg-blue-50 dark:bg-black dark:hover:bg-slate-950">
+        <a href={`/topics/${slug}`} class="block bg-white p-7 no-underline transition-colors hover:bg-blue-50 dark:bg-slate-900 dark:hover:bg-slate-800">
           <h2 class="mt-0 mb-3 text-2xl">{topic.title}</h2>
           <p class="mb-0 text-slate-600 dark:text-slate-400">{topic.description}</p>
         </a>
