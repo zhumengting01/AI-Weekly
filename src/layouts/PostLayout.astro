@@ -150,7 +150,10 @@ const publishDate = new Date(date);
     line-height: 1.3;
   }
 
-  :global(.dark) article#main-content .prose h1 {
+  /* This file uses a global style block, so the theme selector must stay a
+     normal descendant selector. `:global(...)` is only meaningful in a
+     scoped Astro style block and is ignored by the browser here. */
+  .dark article#main-content .prose h1 {
     background-color: #1f2937;
     border-left-color: #f3f4f6;
   }
@@ -194,10 +197,10 @@ const publishDate = new Date(date);
   .editorial-record h2 { margin: 0 0 0.5rem; font-size: 1.125rem; }
   .editorial-record p, .editorial-record ul { margin-bottom: 0; }
 
-  :global(.dark) .issue-facts { background: #172554; color: #dbeafe; border-color: #93c5fd; }
-  :global(.dark) .issue-facts span { color: #bfdbfe; }
-  :global(.dark) .weekly-brief { background: #111827; border-color: #374151; }
-  :global(.dark) .editorial-record { border-color: #374151; color: #9ca3af; }
+  .dark .issue-facts { background: #172554; color: #dbeafe; border-color: #93c5fd; }
+  .dark .issue-facts span { color: #bfdbfe; }
+  .dark .weekly-brief { background: #111827; border-color: #374151; color: #e5e7eb; }
+  .dark .editorial-record { border-color: #374151; color: #9ca3af; }
 </style>
 
   <!-- 回到顶端按钮 -->
